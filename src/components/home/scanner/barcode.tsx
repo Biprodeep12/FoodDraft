@@ -18,7 +18,9 @@ export const BarcodeScanner = () => {
 
     try {
       const devices = await Html5Qrcode.getCameras();
-      const cameraId = devices.at(0)?.id;
+      const cameraId = devices.find(device => device.label.toLowerCase().includes("back"))?.id 
+              || devices[0]?.id;
+
 
       if (!cameraId) {
         setError("No camera found.");
