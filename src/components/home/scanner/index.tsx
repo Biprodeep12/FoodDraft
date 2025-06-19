@@ -47,7 +47,8 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
         (decodedText) => {
           setBarcode(decodedText);
           setResult(decodedText);
-          stopScanner(); // Optional
+          setOpenScanner(false);
+          stopScanner(); 
         },
         (scanError) => {
           console.warn("Scan error:", scanError);
@@ -122,13 +123,13 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
               <Upload size={40} color="white"/>
             </button>
             <button
-            onClick={isScanning ? stopScanner : startScanner}
-            className="cursor-pointer rounded-full hover:bg-white/20 p-4"
+              onClick={isScanning ? stopScanner : startScanner}
+              className="cursor-pointer rounded-full hover:bg-white/20 p-4"
             >
-            {isScanning ?
-            <X size={40} color="white"/>
-            :
-            <RotateCcw size={40} color="white"/>}
+              {isScanning ?
+              <X size={40} color="white"/>
+              :
+              <RotateCcw size={40} color="white"/>}
             </button>
           </div>
         </div>
