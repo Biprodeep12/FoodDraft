@@ -91,11 +91,15 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
   }, [openScanner]);
 
 
+
   return (
     <div
       className={`fixed ${openScanner ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all duration-300 bg-black inset-0 grid grid-rows-[20%_60%_20%]`}
     >
-      <button onClick={() => {setOpenScanner(false),stopScanner()}}>
+      <button onClick={() => {
+        stopScanner(),
+        setOpenScanner(false)
+        }}>
         <ArrowLeft size={30} color="white" className="cursor-pointer absolute top-4 left-4" />
       </button>
       <div id="scanner" className="max-w-[500px] w-full self-center justify-self-center" />

@@ -10,7 +10,7 @@ export default function Home() {
       <div className="flex flex-col items-center max-w-[1440px] w-full">
         <div className="rounded-2xl max-w-[700px] w-full gap-6 shadow-lg bg-white flex flex-col items-center my-8 mx-5 text-center p-8">
           <div className="text-4xl md:text-6xl font-bold text-gray-900">
-                Know What You're
+                Know What You&apos;re
             <span className="text-emerald-500 block">Eating</span>
           </div>
           <p className="text-xl text-gray-600">
