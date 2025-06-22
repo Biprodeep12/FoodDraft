@@ -95,7 +95,7 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
 
   return (
     <div
-      className={`fixed ${openScanner ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all duration-300 bg-black inset-0 grid grid-rows-[20%_60%_20%]`}
+      className={`fixed ${openScanner ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all duration-300 bg-black inset-0 z-50 grid grid-rows-[20%_60%_20%]`}
     >
       <button onClick={() => {
         stopScanner();
