@@ -89,7 +89,7 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
   return () => {
     stopScanner();
   };
-  },[]);
+  },[!openScanner]);
 
 
 
@@ -103,7 +103,7 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
         }}>
         <ArrowLeft size={30} color="white" className="cursor-pointer absolute top-4 left-4" />
       </button>
-      <div id="scanner" className="max-w-[500px] w-full self-center justify-self-center" />
+      <div id="scanner" className="max-w-[500px] max-h-[400px] overflow-hidden w-full self-center justify-self-center" />
       {loading ? (
         <div>
           <LoaderCircle size={40} color="white" className="animate-spin absolute top-1/2 left-1/2 -translate-1/2"/>

@@ -1,17 +1,244 @@
 import { useProduct } from "@/Context/productContext";
+import { Candy, Droplet, Egg, Info, Satellite, Wheat, X, Zap } from "lucide-react";
+import Image from "next/image";
 
 const DrawerPop = () =>{
-    const { barcode, product } = useProduct();
+    const { barcode, product, setBarcode } = useProduct();
+
+    const getNutriScoreColor = (grade: string | undefined) => {
+    switch (grade?.toLowerCase()) {
+      case "a":
+        return "bg-green-500"
+      case "b":
+        return "bg-lime-500"
+      case "c":
+        return "bg-yellow-500"
+      case "d":
+        return "bg-orange-500"
+      case "e":
+        return "bg-red-500"
+      default:
+        return "bg-gray-400"
+    }
+  }
+
+  const getNutrientIcon = (id: string) => {
+    switch (id) {
+      case "energy":
+        return <Zap className="h-5 w-5 text-yellow-500" />
+      case "fat":
+        return <Droplet className="h-5 w-5 text-blue-500" />
+      case "saturated_fat":
+        return <Droplet className="h-5 w-5 text-blue-400" />
+      case "carbohydrates":
+        return <Wheat className="h-5 w-5 text-amber-700" />
+      case "sugars":
+        return <Candy className="h-5 w-5 text-pink-500" />
+      case "proteins":
+        return <Egg className="h-5 w-5 text-orange-500" />
+      case "salt":
+        return <Satellite className="h-5 w-5 text-gray-500" />
+      case "fiber":
+        return <Info className="h-5 w-5 text-green-500" />
+      case "fruits_vegetables_legumes":
+        return <Info className="h-5 w-5 text-green-600" />
+      default:
+        return <Info className="h-5 w-5 text-gray-400" />
+    }
+  }
+
+  function closeDrawer(){
+    setBarcode("");
+  }
+
     return(
-        <div className={`fixed bg-white inset-0 flex transition-all duration-300 ${
-				barcode ? "translate-x-0" : "translate-x-full"
-			}`}>
-            <div className="flex flex-col max-w-[1440px] w-full items-center">
-                <div className="flex flex-row gap-2 font-bold text-4xl my-5">Food<span className="text-emerald-400">Draft</span></div>
-                {barcode}
-                {product?.productName}
-            </div>
+        <div
+      className={`fixed inset-0 z-[1000] flex justify-end transition-all duration-300 ease-in-out ${
+        barcode ? "translate-x-0" : "translate-x-full"
+      }`}
+    >
+      <div className="absolute inset-0 bg-black/50" onClick={closeDrawer} aria-hidden="true" />
+
+      <div className="relative flex h-full w-full flex-col bg-white shadow-lg">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-row items-center gap-2 text-3xl font-extrabold">
+            Food<span className="text-emerald-500">Draft</span>
+          </div>
+          <button
+            onClick={closeDrawer}
+            aria-label="Close product details"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          >
+            <X className="h-7 w-7" />
+          </button>
         </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
+          {product?.status === 1 ? (
+            <div className="grid gap-8">
+              <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
+                <div className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 p-4 shadow-md">
+                  <Image
+                    src={product.product.selected_images.front.display.en || "/placeholder.svg"}
+                    width={300}
+                    height={300}
+                    alt={`Image of ${product.product.product_name}`}
+                    className="aspect-square object-contain"
+                  />
+                </div>
+                <div className="flex flex-col items-center text-center md:items-start md:text-left">
+                  <h1 className="text-4xl font-bold text-gray-900">
+                    {product.product.product_name || "Product Name Not Found"}
+                  </h1>
+                  <p className="mt-2 text-lg italic text-gray-600">Barcode: {product.code || "XXXXXXX"}</p>
+
+                  <div className="mt-6 flex flex-wrap items-center justify-center gap-6 md:justify-start">
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="text-xl font-semibold text-gray-800">Nutri-score:</span>
+                      <span
+                        className={`inline-flex min-w-[90px] justify-center rounded-lg px-5 py-3 text-3xl font-extrabold uppercase text-white shadow-lg transition-all duration-200 hover:scale-105 ${getNutriScoreColor(
+                          product.product.nutrition_grades,
+                        )}`}
+                        title="Nutri-score indicates the overall nutritional quality of food products."
+                      >
+                        {product.product.nutrition_grades || "N/A"}
+                      </span>
+                      <Info className="h-4 w-4 text-gray-500" />
+                    </div>
+                    <div className="hidden h-20 w-px bg-gray-200 md:block" /> 
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="text-xl font-semibold text-gray-800">NOVA Group:</span>
+                      <span
+                        className="inline-flex min-w-[90px] justify-center rounded-lg border-2 border-gray-400 bg-gray-100 px-5 py-3 text-3xl font-extrabold text-gray-800 shadow-lg transition-all duration-200 hover:scale-105"
+                        title="NOVA classification categorizes foods by their level of processing."
+                      >
+                        {product.product.nutriments["nova-group"] || "N/A"}
+                      </span>
+                      <Info className="h-4 w-4 text-gray-500" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {product.product.nutriscore_data && (
+                <div className="rounded-lg bg-white p-6 shadow-md">
+                  <h2 className="mb-4 text-2xl font-bold text-gray-800">Nutri-score Breakdown</h2>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <h3 className="mb-3 text-lg font-semibold text-red-600">Negative Points</h3>
+                      <div className="grid gap-2">
+                        {product.product.nutriscore_data.components.negative.map((item) => (
+                          <div key={item.id} className="flex items-center justify-between">
+                            <span className="flex items-center gap-2 text-gray-700">
+                              {getNutrientIcon(item.id)}
+                              {item.id.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                            </span>
+                            <span className="font-medium text-gray-900">
+                              {item.value !== null ? `${item.value}${item.unit}` : "N/A"} ({item.points} pts)
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="mb-3 text-lg font-semibold text-green-600">Positive Points</h3>
+                      <div className="grid gap-2">
+                        {product.product.nutriscore_data.components.positive.map((item) => (
+                          <div key={item.id} className="flex items-center justify-between">
+                            <span className="flex items-center gap-2 text-gray-700">
+                              {getNutrientIcon(item.id)}
+                              {item.id.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                            </span>
+                            <span className="font-medium text-gray-900">
+                              {item.value !== null ? `${item.value}${item.unit}` : "N/A"} ({item.points} pts)
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="rounded-lg bg-white p-6 shadow-md">
+                <h2 className="mb-4 text-2xl font-bold text-gray-800">Nutrition Information (per 100g)</h2>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="flex items-center justify-between rounded-md bg-gray-50 p-3 shadow-sm">
+                    <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
+                      {getNutrientIcon("energy")}Energy
+                    </span>
+                    <span className="text-lg font-semibold text-gray-900">
+                      {product.product.nutriments.energy_100g} {product.product.nutriments.energy_unit} (
+                      {product.product.nutriments["energy-kcal_100g"]}{" "}
+                      {product.product.nutriments["energy-kcal_unit"]})
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col rounded-md bg-gray-50 p-3 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
+                        {getNutrientIcon("fat")}Fat
+                      </span>
+                      <span className="text-lg font-semibold text-gray-900">
+                        {product.product.nutriments.fat_100g} {product.product.nutriments.fat_unit}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between pl-7 text-base text-gray-600">
+                      <span>- Saturated Fat</span>
+                      <span>
+                        {product.product.nutriments["saturated-fat_100g"]}{" "}
+                        {product.product.nutriments["saturated-fat_unit"]}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col rounded-md bg-gray-50 p-3 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
+                        {getNutrientIcon("carbohydrates")}Carbohydrates
+                      </span>
+                      <span className="text-lg font-semibold text-gray-900">
+                        {product.product.nutriments.carbohydrates_100g}{" "}
+                        {product.product.nutriments.carbohydrates_unit}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between pl-7 text-base text-gray-600">
+                      <span>- Sugars</span>
+                      <span>
+                        {product.product.nutriments.sugars_100g} {product.product.nutriments.sugars_unit}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-md bg-gray-50 p-3 shadow-sm">
+                    <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
+                      {getNutrientIcon("proteins")}Proteins
+                    </span>
+                    <span className="text-lg font-semibold text-gray-900">
+                      {product.product.nutriments.proteins_100g}{" "}
+                      {product.product.nutriments.proteins_unit}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-md bg-gray-50 p-3 shadow-sm">
+                    <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
+                      {getNutrientIcon("salt")}Salt
+                    </span>
+                    <span className="text-lg font-semibold text-gray-900">
+                      {product.product.nutriments.salt_100g} {product.product.nutriments.salt_unit}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center text-center text-gray-500">
+              <p className="text-xl font-medium">Product not found. Please scan a different barcode.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
     )
 
 }
