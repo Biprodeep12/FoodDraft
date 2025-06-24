@@ -11,7 +11,7 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [barcode, setBarcode] = useState<string>('8904063230010');
+  const [barcode, setBarcode] = useState<string>('');
   const [product, setProduct] = useState<ProductData | null>(null);
 
   useEffect(() => {
