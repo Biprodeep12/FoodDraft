@@ -23,14 +23,19 @@ export const evaluateNutrientSafety = (product: ProductData): NutrientStatusDeta
   };
 
   const classify = (
-    name: string,
-    value: number,
-    unit: string,
-    isSafe: boolean
-  ) => {
-    const item = { name, value, unit };
-    isSafe ? safe.push(item) : notSafe.push(item);
-  };
+  name: string,
+  value: number,
+  unit: string,
+  isSafe: boolean
+) => {
+  const item = { name, value, unit };
+  if (isSafe) {
+    safe.push(item);
+  } else {
+    notSafe.push(item);
+  }
+};
+
 
   const carbs = nutriments.carbohydrates_100g;
   classify(
