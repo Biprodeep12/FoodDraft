@@ -1,6 +1,8 @@
 import { useProduct } from "@/Context/productContext";
+import { evaluateNutrientSafety } from "@/utils/per100g";
 import { Candy, Droplet, Egg, Info, Satellite, Wheat, X, Zap } from "lucide-react";
 import Image from "next/image";
+import { IconNutri } from "./icons";
 
 const DrawerPop = () =>{
     const { barcode, product, setBarcode } = useProduct();
@@ -50,6 +52,13 @@ const DrawerPop = () =>{
   function closeDrawer(){
     setBarcode("");
   }
+
+  const productNutri= product ? evaluateNutrientSafety(product) : null;
+
+  const allowOneDecimal = (input: number): number => {
+  return Math.round(input * 10) / 10;
+  };
+
 
     return(
         <div
@@ -120,38 +129,28 @@ const DrawerPop = () =>{
                 </div>
               </div>
 
-              {product.product.nutriscore_data && (
+              {product.product && (
                 <div className="rounded-lg bg-white p-6 shadow-md">
-                  <h2 className="mb-4 text-2xl font-bold text-gray-800">Nutri-score Breakdown</h2>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <h3 className="mb-3 text-lg font-semibold text-red-600">Negative Points</h3>
-                      <div className="grid gap-2">
-                        {product.product.nutriscore_data.components.negative.map((item) => (
-                          <div key={item.id} className="flex items-center justify-between">
-                            <span className="flex items-center gap-2 text-gray-700">
-                              {getNutrientIcon(item.id)}
-                              {item.id.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-                            </span>
-                            <span className="font-medium text-gray-900">
-                              {item.value !== null ? `${item.value}${item.unit}` : "N/A"} ({item.points} pts)
-                            </span>
+                  <span className="text-2xl font-bold text-gray-800">Nutrients (per 100g)</span>
+                  <div className="grid gap-4 md:grid-cols-2 mt-5">
+                    <div className="bg-gray-50 rounded-md shadow-sm p-3">
+                      <span className="text-lg font-semibold">Negative Points</span>
+                      <div className="grid gap-2 mt-3">
+                        {productNutri?.notSafe.map((nutri,index)=>(
+                          <div key={index} className="flex flex-row justify-between">
+                            <span className="capitalize flex flex-row flex-nowrap gap-1">{IconNutri(nutri.name,"red")}{nutri.name}</span>
+                            <span className="text-red-600">{nutri.value? `${allowOneDecimal(nutri.value)}${nutri.unit}`:"NaN"}</span>
                           </div>
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <h3 className="mb-3 text-lg font-semibold text-green-600">Positive Points</h3>
-                      <div className="grid gap-2">
-                        {product.product.nutriscore_data.components.positive.map((item) => (
-                          <div key={item.id} className="flex items-center justify-between">
-                            <span className="flex items-center gap-2 text-gray-700">
-                              {getNutrientIcon(item.id)}
-                              {item.id.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-                            </span>
-                            <span className="font-medium text-gray-900">
-                              {item.value !== null ? `${item.value}${item.unit}` : "N/A"} ({item.points} pts)
-                            </span>
+                    <div className="bg-gray-50 rounded-md shadow-sm p-3">
+                      <h3 className="mb-3 text-lg font-semibold">Positive Points</h3>
+                      <div className="grid gap-2 mt-3">
+                        {productNutri?.safe.map((nutri,index)=>(
+                          <div key={index} className="flex flex-row justify-between">
+                            <span className="capitalize flex flex-row flex-nowrap gap-1">{IconNutri(nutri.name,"green")}{nutri.name}</span>
+                            <span className="text-green-700">{nutri.value? `${allowOneDecimal(nutri.value)}${nutri.unit}`:"NaN"}</span>
                           </div>
                         ))}
                       </div>
