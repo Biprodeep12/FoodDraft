@@ -25,31 +25,6 @@ const DrawerPop = () =>{
     }
   }
 
-  const getNutrientIcon = (id: string) => {
-    switch (id) {
-      case "energy":
-        return <Zap className="h-5 w-5 text-yellow-500" />
-      case "fat":
-        return <Droplet className="h-5 w-5 text-blue-500" />
-      case "saturated_fat":
-        return <Droplet className="h-5 w-5 text-blue-400" />
-      case "carbohydrates":
-        return <Wheat className="h-5 w-5 text-amber-700" />
-      case "sugars":
-        return <Candy className="h-5 w-5 text-pink-500" />
-      case "proteins":
-        return <Egg className="h-5 w-5 text-orange-500" />
-      case "salt":
-        return <Satellite className="h-5 w-5 text-gray-500" />
-      case "fiber":
-        return <Info className="h-5 w-5 text-green-500" />
-      case "fruits_vegetables_legumes":
-        return <Info className="h-5 w-5 text-green-600" />
-      default:
-        return <Info className="h-5 w-5 text-gray-400" />
-    }
-  }
-
   function closeDrawer(){
     setBarcode("");
   }
