@@ -3,6 +3,7 @@ import { evaluateNutrientSafety } from "@/utils/per100g";
 import { Candy, Droplet, Egg, Info, Satellite, Wheat, X, Zap } from "lucide-react";
 import Image from "next/image";
 import { IconNutri } from "./icons";
+import { ProductAI } from "./aiPro";
 
 const DrawerPop = () =>{
     const { barcode, product, setBarcode } = useProduct();
@@ -91,6 +92,7 @@ const DrawerPop = () =>{
                     src={product.product.selected_images.front.display.en || "/placeholder.svg"}
                     width={300}
                     height={300}
+                    priority
                     alt={`Image of ${product.product.product_name}`}
                     className="aspect-square object-contain"
                   />
@@ -134,7 +136,7 @@ const DrawerPop = () =>{
                   <span className="text-2xl font-bold text-gray-800">Nutrients (per 100g)</span>
                   <div className="grid gap-4 md:grid-cols-2 mt-5">
                     <div className="bg-gray-50 rounded-md shadow-sm p-3">
-                      <span className="text-lg font-semibold">Negative Points</span>
+                      <span className="text-lg font-bold">Negative Points</span>
                       <div className="grid gap-2 mt-3">
                         {productNutri?.notSafe.map((nutri,index)=>(
                           <div key={index} className="flex flex-row justify-between">
@@ -145,7 +147,7 @@ const DrawerPop = () =>{
                       </div>
                     </div>
                     <div className="bg-gray-50 rounded-md shadow-sm p-3">
-                      <h3 className="mb-3 text-lg font-semibold">Positive Points</h3>
+                      <h3 className="mb-3 text-lg font-bold">Positive Points</h3>
                       <div className="grid gap-2 mt-3">
                         {productNutri?.safe.map((nutri,index)=>(
                           <div key={index} className="flex flex-row justify-between">
@@ -160,75 +162,41 @@ const DrawerPop = () =>{
               )}
 
               <div className="rounded-lg bg-white p-6 shadow-md">
-                <h2 className="mb-4 text-2xl font-bold text-gray-800">Nutrition Information (per 100g)</h2>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="flex items-center justify-between rounded-md bg-gray-50 p-3 shadow-sm">
-                    <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
-                      {getNutrientIcon("energy")}Energy
-                    </span>
-                    <span className="text-lg font-semibold text-gray-900">
-                      {product.product.nutriments.energy_100g} {product.product.nutriments.energy_unit} (
-                      {product.product.nutriments["energy-kcal_100g"]}{" "}
-                      {product.product.nutriments["energy-kcal_unit"]})
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col rounded-md bg-gray-50 p-3 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
-                        {getNutrientIcon("fat")}Fat
-                      </span>
-                      <span className="text-lg font-semibold text-gray-900">
-                        {product.product.nutriments.fat_100g} {product.product.nutriments.fat_unit}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center justify-between pl-7 text-base text-gray-600">
-                      <span>- Saturated Fat</span>
-                      <span>
-                        {product.product.nutriments["saturated-fat_100g"]}{" "}
-                        {product.product.nutriments["saturated-fat_unit"]}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col rounded-md bg-gray-50 p-3 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
-                        {getNutrientIcon("carbohydrates")}Carbohydrates
-                      </span>
-                      <span className="text-lg font-semibold text-gray-900">
-                        {product.product.nutriments.carbohydrates_100g}{" "}
-                        {product.product.nutriments.carbohydrates_unit}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center justify-between pl-7 text-base text-gray-600">
-                      <span>- Sugars</span>
-                      <span>
-                        {product.product.nutriments.sugars_100g} {product.product.nutriments.sugars_unit}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between rounded-md bg-gray-50 p-3 shadow-sm">
-                    <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
-                      {getNutrientIcon("proteins")}Proteins
-                    </span>
-                    <span className="text-lg font-semibold text-gray-900">
-                      {product.product.nutriments.proteins_100g}{" "}
-                      {product.product.nutriments.proteins_unit}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between rounded-md bg-gray-50 p-3 shadow-sm">
-                    <span className="flex items-center gap-2 text-lg font-medium text-gray-700">
-                      {getNutrientIcon("salt")}Salt
-                    </span>
-                    <span className="text-lg font-semibold text-gray-900">
-                      {product.product.nutriments.salt_100g} {product.product.nutriments.salt_unit}
-                    </span>
-                  </div>
+                <h2 className="mb-4 text-2xl font-bold text-gray-800">All Nutrition Information (per 100g)</h2>
+                <div className="grid gap-4 md:grid-cols-2 bg-gray-50 rounded-md shadow-sm p-3">
+                  {[
+                  "energy-kcal",
+                  "carbohydrates",
+                  "proteins",
+                  "fat",
+                  "saturated-fat",
+                  "sugars",
+                  "fiber",
+                  "sodium",
+                  ].map((nutri) => {
+                   const value = product.product.nutriments[`${nutri}_value` as keyof typeof product.product.nutriments];
+                   const unit = product.product.nutriments[`${nutri}_unit` as keyof typeof product.product.nutriments];
+                    return (
+                   <div key={nutri} className="flex flex-row justify-between">
+                     <span className="capitalize flex flex-row flex-nowrap gap-1">
+                       {IconNutri(nutri, "blue")}
+                       {nutri}
+                     </span>
+                     <span>
+                       {typeof value === "number" ? `${allowOneDecimal(value)}${unit || ""}` : "NaN"}
+                     </span>
+                   </div>
+                   );
+                 })}
                 </div>
               </div>
+
+              <div className="rounded-lg bg-white p-6 shadow-md">
+                <h2 className="mb-4 text-2xl font-bold text-gray-800">Ask AI Suggestions</h2>
+                <div className="grid gap-4 md:grid-cols-2 bg-gray-50 rounded-md shadow-sm p-3">
+                </div>
+              </div>
+              <ProductAI/>
             </div>
           ) : (
             <div className="flex h-full items-center justify-center text-center text-gray-500">
