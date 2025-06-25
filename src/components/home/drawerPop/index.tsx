@@ -1,6 +1,6 @@
 import { useProduct } from "@/Context/productContext";
 import { evaluateNutrientSafety } from "@/utils/per100g";
-import { Candy, Droplet, Egg, Info, Satellite, Wheat, X, Zap } from "lucide-react";
+import { Info, X } from "lucide-react";
 import Image from "next/image";
 import { IconNutri } from "./icons";
 import { ProductAI } from "./aiPro";
