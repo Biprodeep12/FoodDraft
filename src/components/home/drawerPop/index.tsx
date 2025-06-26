@@ -3,7 +3,7 @@ import { evaluateNutrientSafety } from "@/utils/per100g";
 import { Info, X } from "lucide-react";
 import Image from "next/image";
 import { IconNutri } from "./icons";
-import { ProductAI } from "./aiPro";
+import { ProductAI } from "./ProductAI";
 
 const DrawerPop = () =>{
     const { barcode, product, setBarcode } = useProduct();
@@ -165,13 +165,7 @@ const DrawerPop = () =>{
                  })}
                 </div>
               </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-md">
-                <h2 className="mb-4 text-2xl font-bold text-gray-800">Ask AI Suggestions</h2>
-                <div className="grid gap-4 md:grid-cols-2 bg-gray-50 rounded-md shadow-sm p-3">
-                </div>
-              </div>
-              <ProductAI/>
+              <ProductAI nutri={product.product.product_name}/>
             </div>
           ) : (
             <div className="flex h-full items-center justify-center text-center text-gray-500">

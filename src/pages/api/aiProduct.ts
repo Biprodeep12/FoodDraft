@@ -1,39 +1,73 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  console.log('Received request with body:', req.body);
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { message } = req.body;
-
   try {
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
+    const { messages } = req.body;
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ 
+        error: 'Messages are required and must be an array' 
+      });
     }
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    if (!OPENROUTER_API_KEY) {
+      console.error('OPENROUTER_API_KEY is not set');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+
+    console.log('Making request to OpenRouter with messages:', messages);
+
+    const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer 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`,
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
-        messages: [{ role: 'user', content: message }],
+        model: 'deepseek/deepseek-chat-v3-0324:free',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a certified nutritionist. 
+You strictly answer only questions related to food, nutrients, diets, health, or weight management. 
+You do not answer any other type of question. 
+Keep all your responses brief, clear, and strictly in English. 
+If a question is irrelevant to nutrition, politely reply: "I'm only able to assist with nutrition-related questions."`,
+          },
+          ...messages,
+        ],
       }),
     });
 
-    const data = await response.json();
+    const responseData = await response.json();
+    console.log('OpenRouter response:', responseData);
 
     if (!response.ok) {
-      console.error('OpenRouter API error:', data);
-      return res.status(500).json({ error: 'OpenRouter API failed', details: data });
+      console.error('OpenRouter API error:', responseData);
+      return res.status(500).json({ 
+        error: 'AI service error',
+        details: responseData.error?.message || 'Unknown error from OpenRouter'
+      });
     }
 
-    return res.status(200).json(data);
+    return res.status(200).json(responseData);
   } catch (error) {
-    console.error('Server Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error('API handler error:', error);
+    return res.status(500).json({ 
+      error: 'Internal Server Error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }
