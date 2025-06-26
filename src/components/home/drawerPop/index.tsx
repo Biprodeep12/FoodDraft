@@ -4,40 +4,68 @@ import { Info, X } from "lucide-react";
 import Image from "next/image";
 import { IconNutri } from "./icons";
 import { ProductAI } from "./ProductAI";
+import { Loader } from "./loader";
+import React, { useCallback, useMemo } from "react";
+
+interface Nutrient {
+  name: string;
+  value: number;
+  unit: string;
+}
+
+interface NutrientListProps {
+  title: string;
+  data: Nutrient[];
+  color: "red" | "green";
+}
 
 const DrawerPop = () =>{
-    const { barcode, product, setBarcode } = useProduct();
+    const { barcode, product, loading, setBarcode } = useProduct();
 
-    const getNutriScoreColor = (grade: string | undefined) => {
+    const getNutriScoreColor = useCallback((grade: string | undefined) => {
     switch (grade?.toLowerCase()) {
-      case "a":
-        return "bg-green-500"
-      case "b":
-        return "bg-lime-500"
-      case "c":
-        return "bg-yellow-500"
-      case "d":
-        return "bg-orange-500"
-      case "e":
-        return "bg-red-500"
-      default:
-        return "bg-gray-400"
-    }
-  }
+    case "a": return "bg-green-500";
+    case "b": return "bg-lime-500";
+    case "c": return "bg-yellow-500";
+    case "d": return "bg-orange-500";
+    case "e": return "bg-red-500";
+    default: return "bg-gray-400";
+   }
+   }, []);
+
+   const productNutri = useMemo(() => {
+   return product ? evaluateNutrientSafety(product) : null;
+   }, [product]);
+
+   const allowOneDecimal = useCallback((input: number): number => {
+   return Math.round(input * 10) / 10;
+   }, []);
 
   function closeDrawer(){
     setBarcode("");
   }
 
-  const productNutri= product ? evaluateNutrientSafety(product) : null;
+  const NutrientList = React.memo(({ title, data, color }:NutrientListProps) => (
+  <div className="bg-gray-50 rounded-md shadow-sm p-3">
+    <div className="mb-3 text-lg font-bold">{title}</div>
+    <div className="grid gap-2 mt-3">
+      {data.map((nutri, index) => (
+        <div key={index} className="flex flex-row justify-between">
+          <span className="capitalize flex flex-row flex-nowrap gap-1">
+            {IconNutri(nutri.name, color)}
+            {nutri.name}
+          </span>
+          <span className={color === "red" ? "text-red-600" : "text-green-700"}>
+            {nutri.value ? `${allowOneDecimal(nutri.value)}${nutri.unit}` : "NaN"}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+  ));
 
-  const allowOneDecimal = (input: number): number => {
-  return Math.round(input * 10) / 10;
-  };
-
-
-    return(
-        <div
+  return(
+    <div
       className={`fixed inset-0 z-[1000] flex justify-end transition-all duration-300 ease-in-out ${
         barcode ? "translate-x-0" : "translate-x-full"
       }`}
@@ -52,12 +80,15 @@ const DrawerPop = () =>{
           <button
             onClick={closeDrawer}
             aria-label="Close product details"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+            className="inline-flex cursor-pointer h-10 w-10 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           >
             <X className="h-7 w-7" />
           </button>
         </div>
 
+        {loading ?
+        <Loader/>
+        :
         <div className="flex-1 overflow-y-auto p-6">
           {product?.status === 1 ? (
             <div className="grid gap-8">
@@ -110,28 +141,8 @@ const DrawerPop = () =>{
                 <div className="rounded-lg bg-white p-6 shadow-md">
                   <span className="text-2xl font-bold text-gray-800">Nutrients (per 100g)</span>
                   <div className="grid gap-4 md:grid-cols-2 mt-5">
-                    <div className="bg-gray-50 rounded-md shadow-sm p-3">
-                      <span className="text-lg font-bold">Negative Points</span>
-                      <div className="grid gap-2 mt-3">
-                        {productNutri?.notSafe.map((nutri,index)=>(
-                          <div key={index} className="flex flex-row justify-between">
-                            <span className="capitalize flex flex-row flex-nowrap gap-1">{IconNutri(nutri.name,"red")}{nutri.name}</span>
-                            <span className="text-red-600">{nutri.value? `${allowOneDecimal(nutri.value)}${nutri.unit}`:"NaN"}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-md shadow-sm p-3">
-                      <h3 className="mb-3 text-lg font-bold">Positive Points</h3>
-                      <div className="grid gap-2 mt-3">
-                        {productNutri?.safe.map((nutri,index)=>(
-                          <div key={index} className="flex flex-row justify-between">
-                            <span className="capitalize flex flex-row flex-nowrap gap-1">{IconNutri(nutri.name,"green")}{nutri.name}</span>
-                            <span className="text-green-700">{nutri.value? `${allowOneDecimal(nutri.value)}${nutri.unit}`:"NaN"}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <NutrientList title="Negative Points" data={productNutri?.notSafe || []} color="red" />
+                    <NutrientList title="Positive Points" data={productNutri?.safe || []} color="green" />
                   </div>
                 </div>
               )}
@@ -172,10 +183,11 @@ const DrawerPop = () =>{
               <p className="text-xl font-medium">Product not found. Please scan a different barcode.</p>
             </div>
           )}
-        </div>
+        </div>}
+
       </div>
     </div>
     )
-
 }
-export default DrawerPop;
+
+export default React.memo(DrawerPop);

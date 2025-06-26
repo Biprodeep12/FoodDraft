@@ -1,43 +1,48 @@
 import { ArrowUp, LoaderPinwheel, Plus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
 
 interface ProductAIProps {
   nutri: string;
 }
 
 export const ProductAI = ({ nutri }: ProductAIProps) => {
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [input, setInput] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [questions, setQuestions] = useState([
+  const [questions, setQuestions] = useState<string[]>([
     `Is ${nutri} good for health?`,
     `Can ${nutri} help with weight loss?`,
     `What are the benefits of ${nutri}?`,
     `Are there any side effects of ${nutri}?`,
-    `How much ${nutri} should I consume daily?`
+    `How much ${nutri} should I consume daily?`,
   ]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     if (messages.length > 0) {
       scrollToBottom();
     }
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
+const handleSendMessage = useCallback(async (customMessage?: string) => {
+  const messageToSend = customMessage ?? input.trim();
+  if (!messageToSend) return;
 
-  const sendMessage = async () => {
-  if (!input.trim()) return;
-
-  const userMessage = { role: "user", content: input };
+  const userMessage: Message = { role: "user", content: messageToSend };
   const newMessages = [...messages, userMessage];
-  
+
   setMessages(newMessages);
   setIsLoading(true);
   setError(null);
@@ -54,14 +59,14 @@ export const ProductAI = ({ nutri }: ProductAIProps) => {
 
     if (!res.ok) {
       throw new Error(
-        data.error || 
-        data.details || 
+        data.error ||
+        data.details ||
         `API request failed with status ${res.status}`
       );
     }
 
-    if (data?.choices?.[0]?.message?.content) {
-      const aiMessage = data.choices[0].message;
+    const aiMessage = data?.choices?.[0]?.message;
+    if (aiMessage?.content) {
       setMessages([...newMessages, aiMessage]);
     } else {
       throw new Error("No valid response from AI");
@@ -69,16 +74,22 @@ export const ProductAI = ({ nutri }: ProductAIProps) => {
   } catch (err) {
     console.error("Error sending message:", err);
     setError(err instanceof Error ? err.message : "An unknown error occurred");
-    setMessages(prev => [...prev.slice(0, -1)]);
+    setMessages((prev) => prev.slice(0, -1));
   } finally {
     setIsLoading(false);
   }
-  };
+  }, [input, messages]);
 
-  const handleClick = (questionToSend: string, index: number) => {
-    setInput(questionToSend);
-    setQuestions((prev) => prev.filter((_, i) => i !== index));
-  };
+
+  const handleQuestionClick = useCallback(
+    (questionToSend: string, index: number) => {
+      setInput(questionToSend);
+      setQuestions((prev) => prev.filter((_, i) => i !== index));
+    },
+    []
+  );
+
+  const suggestedQuestions = useMemo(() => questions, [questions]);
 
   return (
     <div className="max-w-xl w-full mx-auto rounded-lg bg-white p-6 shadow-md">
@@ -89,32 +100,35 @@ export const ProductAI = ({ nutri }: ProductAIProps) => {
           <div
             key={index}
             className={`p-2 rounded ${
-            msg.role === "user"
-              ? "bg-blue-100 text-right"
-              : "bg-green-100 text-left"
+              msg.role === "user"
+                ? "bg-blue-100 text-right"
+                : "bg-green-100 text-left"
             }`}
           >
-           <strong>{msg.role === "user" ? "You" : "AI"}:</strong>{" "}
-           <ReactMarkdown>{msg.content}</ReactMarkdown>
+            <strong>{msg.role === "user" ? "You" : "AI"}:</strong>{" "}
+            <ReactMarkdown>{msg.content}</ReactMarkdown>
           </div>
         ))}
 
-        {isLoading && 
-        <div className="text-gray-500 mb-2 flex flex-row items-center gap-2.5">
-          <LoaderPinwheel color="blue" className="animate-spin"/>AI is Thinking...
-        </div>}
+        {isLoading && (
+          <div className="text-gray-500 mb-2 flex flex-row items-center gap-2.5">
+            <LoaderPinwheel color="blue" className="animate-spin" />
+            AI is Thinking...
+          </div>
+        )}
 
         <div ref={messagesEndRef} />
+      </div>
 
-     </div>
-
-      {!isLoading && questions.length > 0 && (
+      {!isLoading && suggestedQuestions.length > 0 && (
         <div className="space-y-2 mb-4">
-          {questions.map((opt, index) => (
+          {suggestedQuestions.map((opt, index) => (
             <button
               key={index}
-              onClickCapture={() => handleClick(opt, index)}
-              onClick={sendMessage}
+              onClick={() => {
+                handleQuestionClick(opt, index);
+                handleSendMessage(opt);
+              }}
               className="bg-gray-50 opacity-0 text-left items-center rounded-md shadow-sm p-3 w-full flex flex-row justify-between hover:-translate-y-1 cursor-pointer transition-all duration-200"
               style={{
                 animation: "popUp 0.4s ease forwards",
@@ -137,12 +151,12 @@ export const ProductAI = ({ nutri }: ProductAIProps) => {
           placeholder="Type your health question..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           disabled={isLoading}
         />
         <button
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-          onClick={sendMessage}
+          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 cursor-pointer"
+          onClick={()=>handleSendMessage(input)}
           disabled={isLoading || !input.trim()}
         >
           <ArrowUp size={24} color="white" />

@@ -1,6 +1,6 @@
 import { ProductData } from "@/types/product";
 
-interface NutrientStatusDetailed {
+export interface NutrientStatusDetailed {
   safe: { name: string; value: number; unit: string }[];
   notSafe: { name: string; value: number; unit: string }[];
 }
