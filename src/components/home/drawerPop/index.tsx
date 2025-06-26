@@ -45,7 +45,7 @@ const DrawerPop = () =>{
     setBarcode("");
   }
 
-  const NutrientList = React.memo(({ title, data, color }:NutrientListProps) => (
+  const NutrientList = React.memo(({ title, data, color }: NutrientListProps) => (
   <div className="bg-gray-50 rounded-md shadow-sm p-3">
     <div className="mb-3 text-lg font-bold">{title}</div>
     <div className="grid gap-2 mt-3">
@@ -63,6 +63,8 @@ const DrawerPop = () =>{
     </div>
   </div>
   ));
+
+  NutrientList.displayName = "NutrientList";
 
   return(
     <div
