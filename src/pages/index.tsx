@@ -1,10 +1,12 @@
 import DrawerPop from "@/components/home/drawerPop";
 import Scanner from "@/components/home/scanner";
-import { Apple, ArrowRight, CheckCircle, Scan, ScanLine, Shield, Star, Zap } from "lucide-react";
+import { Apple, ArrowRight, CheckCircle, Link, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
+  const router = useRouter();
   return (
     <>
       <div className="min-h-screen w-full flex px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 via-emerald-100 to-teal-100 justify-center items-center relative overflow-hidden">
@@ -170,22 +172,44 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-20 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-8 sm:p-12 text-white">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-              {[
-                { number: "1M+", label: "Products Scanned" },
-                { number: "50K+", label: "Happy Users" },
-                { number: "99.9%", label: "Accuracy Rate" },
-                { number: "24/7", label: "Available" },
-              ].map((stat, index) => (
-                <div key={index} className="group">
-                  <div className="text-3xl sm:text-4xl font-bold mb-2 group-hover:scale-110 transition-transform duration-300">
-                    {stat.number}
-                  </div>
-                  <div className="text-emerald-100 font-medium">{stat.label}</div>
-                </div>
-              ))}
+        </div>
+      </div>
+
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-16 lg:py-24 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 25% 25%, #60a5fa 0%, transparent 50%), 
+                             radial-gradient(circle at 75% 75%, #818cf8 0%, transparent 50%)`,
+            }}
+          ></div>
+        </div>
+        <div className="max-w-3xl mx-auto relative z-10 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Find What You're Looking For</h2>
+          <p className="text-lg sm:text-xl text-blue-100 mb-8">
+            Search our extensive database of food items by name, brand, or category to get detailed nutritional
+            information and insights.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-sm:items-center">
+            <div className="relative flex-grow max-sm:w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="e.g., 'apple', 'protein bar', 'oat milk'"
+                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-md"
+              />
             </div>
+            <button
+              onClick={() => router.push('/search')}
+              className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white text-blue-700 px-8 py-3 text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              <div className="absolute inset-0 bg-blue-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+              <div className="relative flex items-center gap-3">
+                Search
+               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </div>
+           </button>
           </div>
         </div>
       </div>
