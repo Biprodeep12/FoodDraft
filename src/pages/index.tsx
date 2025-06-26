@@ -1,6 +1,6 @@
 import DrawerPop from "@/components/home/drawerPop";
 import Scanner from "@/components/home/scanner";
-import { Apple, ArrowRight, CheckCircle, Link, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
+import { Apple, ArrowRight, CheckCircle, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -186,7 +186,7 @@ export default function Home() {
           ></div>
         </div>
         <div className="max-w-3xl mx-auto relative z-10 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Find What You're Looking For</h2>
+          <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Find What You&apos;re Looking For</div>
           <p className="text-lg sm:text-xl text-blue-100 mb-8">
             Search our extensive database of food items by name, brand, or category to get detailed nutritional
             information and insights.
