@@ -1,3 +1,4 @@
+import DrawerPop from "@/components/home/drawerPop";
 import { ProductProvider } from "@/Context/productContext";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
@@ -6,6 +7,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return(
     <ProductProvider>
       <Component {...pageProps} />
+      <DrawerPop/>
     </ProductProvider>
   );
 }

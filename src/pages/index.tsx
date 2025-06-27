@@ -1,4 +1,3 @@
-import DrawerPop from "@/components/home/drawerPop";
 import Scanner from "@/components/home/scanner";
 import { ArrowRight, CheckCircle, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
 import { useState } from "react";
@@ -298,7 +297,6 @@ export default function Home() {
       </div>
 
       <Scanner openScanner={openScanner} setOpenScanner={setOpenScanner} />
-      <DrawerPop />
     </>
   );
 }

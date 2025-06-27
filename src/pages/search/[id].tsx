@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { NextPageContext } from "next";
 import { Filter, Loader2, Plus, Search, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
+import { useProduct } from "@/Context/productContext";
 
 interface Product {
   product_name: string;
@@ -38,12 +39,28 @@ export default function SearchPage({
 }: PageProps) {
   const router = useRouter();
   const { query } = router;
-
+  const { setBarcode } = useProduct();
   const [products, setProducts] = useState<Product[]>(initialProducts || []);
   const [meta, setMeta] = useState<Meta | undefined>(initialMeta);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
+  const [searchInput, setSearchInput] =useState("")
+
+  const onSearch = () =>{
+    if(!searchInput.trim()) return;
+    router.push(
+        {
+            pathname: router.pathname,
+            query: {
+                ...router.query,
+                id: searchInput,
+            },
+        },
+        undefined,
+        {shallow: true},
+    )
+  }
 
   const fetchProducts = async (pageToFetch: number) => {
     if (!query.id) return;
@@ -110,7 +127,7 @@ export default function SearchPage({
   }
 
   return (
-<div className="min-h-screen bg-gray-50">
+  <div className="min-h-screen bg-gray-50">
 
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,9 +137,6 @@ export default function SearchPage({
             </div>
             <div className="flex items-center gap-3">
               <button className="p-2 text-gray-600 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors">
-                <Search className="h-5 w-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors">
                 <Star className="h-5 w-5" />
               </button>
             </div>
@@ -131,17 +145,22 @@ export default function SearchPage({
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="mb-6">
-          <div className="relative max-w-2xl mx-auto">
+        <div className="mb-6 flex flex-row justify-center gap-5">
+          <div className="relative max-w-xl w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
             <input
               type="text"
               placeholder="Search for products..."
+              value={searchInput}
+              onChange={(e)=>setSearchInput(e.target.value)}
               className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
             />
           </div>
+          <button onClick={onSearch} className="rounded-xl bg-emerald-500 py-2 px-2.5 cursor-pointer hover:shadow-sm">
+            <Search className="h-6 w-6 text-white"/>
+          </button>
         </div>
 
         <div className="mb-8">
@@ -153,7 +172,7 @@ export default function SearchPage({
                 </div>
                 <div className="flex flex-col">
                   <span className="text-3xl font-bold text-gray-900">Search Results</span>
-                  <span className="text-sm text-gray-600 mt-1">{products.length} products found</span>
+                  <span className="text-sm text-gray-600 mt-1">{products.length*20} products found</span>
                 </div>
               </div>
             </div>
@@ -193,13 +212,13 @@ export default function SearchPage({
           </div>
         )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {products.map((product) => (
             <div
               key={product.code}
               className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 border border-gray-200 hover:border-emerald-200 overflow-hidden relative"
             >
-              <button className="absolute top-2 right-2 z-10 w-7 h-7 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-emerald-50 shadow-sm border border-gray-200">
+              <button className="absolute cursor-pointer top-2 right-2 z-10 w-7 h-7 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-emerald-50 shadow-sm border border-gray-200">
                 <Star className="h-3.5 w-3.5 text-gray-600 hover:text-emerald-500" />
               </button>
 
@@ -224,12 +243,12 @@ export default function SearchPage({
                 )}
               </div>
 
-              <div className="p-3">
+              <div className="p-3 flex flex-col">
                 <div className="font-semibold text-sm text-gray-900 mb-2 line-clamp-2 leading-tight group-hover:text-emerald-600 transition-colors">
                   {product.product_name || "Unnamed Product"}
                 </div>
 
-                <button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-xs group/btn">
+                <button onClick={()=>setBarcode(product.code)} className="w-full cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-xs group/btn">
                   <ShoppingCart className="h-3.5 w-3.5 group-hover/btn:scale-110 transition-transform" />
                   View Details
                 </button>
