@@ -6,7 +6,14 @@ import { useState } from "react";
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
+  const [searchInput, setSearchInput] = useState("")
   const router = useRouter();
+
+  const HandlePush = () =>{
+    if(!searchInput) return;
+    router.push(`/search/${searchInput}`)
+  }
+
   return (
     <>
       <div className="min-h-screen w-full flex px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 via-emerald-100 to-teal-100 justify-center items-center relative overflow-hidden">
@@ -197,11 +204,13 @@ export default function Home() {
               <input
                 type="text"
                 placeholder="e.g., 'apple', 'protein bar', 'oat milk'"
+                value={searchInput}
+                onChange={(e)=>setSearchInput(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-md"
               />
             </div>
             <button
-              onClick={() => router.push('/search')}
+              onClick={HandlePush}
               className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white text-blue-700 px-8 py-3 text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95"
             >
               <div className="absolute inset-0 bg-blue-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
@@ -228,7 +237,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
             <div className="flex-1 text-center lg:text-left">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">Download Our App</h2>
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">Download Our App</div>
               <p className="text-gray-300 text-lg sm:text-xl mb-8 max-w-2xl mx-auto lg:mx-0">
                 Get the best scanning experience on your mobile device with our dedicated app.
               </p>
@@ -263,7 +272,7 @@ export default function Home() {
                             <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
                               <ScanLine className="w-8 h-8 text-white" />
                             </div>
-                            <h3 className="font-bold text-gray-900 text-lg">NutriScan</h3>
+                            <div className="font-bold text-gray-900 text-lg">NutriScan</div>
                             <p className="text-gray-600 text-sm">Ready to scan</p>
                           </div>
 
