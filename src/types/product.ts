@@ -21,6 +21,10 @@ export interface ProductData {
       fat_100g: number;
       fat_unit: string;
       fat_value: number;
+      fiber: number;
+      fiber_100g: number;
+      fiber_unit: string;
+      fiber_value: number;
       "fruits-vegetables-legumes-estimate-from-ingredients_100g": number;
       "fruits-vegetables-legumes-estimate-from-ingredients_serving": number;
       "fruits-vegetables-nuts-estimate-from-ingredients_100g": number;

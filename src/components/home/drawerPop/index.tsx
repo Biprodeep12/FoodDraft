@@ -49,17 +49,22 @@ const DrawerPop = () =>{
   <div className="bg-gray-50 rounded-md shadow-sm p-3">
     <div className="mb-3 text-lg font-bold">{title}</div>
     <div className="grid gap-2 mt-3">
-      {data.map((nutri, index) => (
+    {data.length > 0 ? (
+     data.map((nutri, index) => (
         <div key={index} className="flex flex-row justify-between">
-          <span className="capitalize flex flex-row flex-nowrap gap-1">
+          <span className="capitalize flex flex-row flex-nowrap gap-1 items-center">
             {IconNutri(nutri.name, color)}
             {nutri.name}
           </span>
           <span className={color === "red" ? "text-red-600" : "text-green-700"}>
-            {nutri.value ? `${allowOneDecimal(nutri.value)}${nutri.unit}` : "NaN"}
+            {allowOneDecimal(nutri.value)}{nutri.unit}
           </span>
-        </div>
-      ))}
+       </div>
+      ))
+    )
+    :
+    <div className="flex w-full text-center font-extrabold italic">Not Found</div>
+    }
     </div>
   </div>
   ));
@@ -106,9 +111,9 @@ const DrawerPop = () =>{
                   />
                 </div>
                 <div className="flex flex-col items-center text-center md:items-start md:text-left">
-                  <h1 className="text-4xl font-bold text-gray-900">
+                  <div className="text-4xl font-bold text-gray-900">
                     {product.product.product_name || "Product Name Not Found"}
-                  </h1>
+                  </div>
                   <p className="mt-2 text-lg italic text-gray-600">Barcode: {product.code || "XXXXXXX"}</p>
 
                   <div className="mt-6 flex flex-wrap items-center justify-center gap-6 md:justify-start">
@@ -150,7 +155,7 @@ const DrawerPop = () =>{
               )}
 
               <div className="rounded-lg bg-white p-6 shadow-md">
-                <h2 className="mb-4 text-2xl font-bold text-gray-800">All Nutrition Information (per {product.product.nutrition_data_per})</h2>
+                <div className="mb-4 text-2xl font-bold text-gray-800">All Nutrition Information (per {product.product.nutrition_data_per})</div>
                 <div className="grid gap-4 md:grid-cols-2 bg-gray-50 rounded-md shadow-sm p-3">
                   {[
                   "energy-kcal",
@@ -162,8 +167,8 @@ const DrawerPop = () =>{
                   "fiber",
                   "sodium",
                   ].map((nutri) => {
-                   const value = product.product.nutriments[`${nutri}_value` as keyof typeof product.product.nutriments];
-                   const unit = product.product.nutriments[`${nutri}_unit` as keyof typeof product.product.nutriments];
+                   const value = product.product?.nutriments[`${nutri}_value` as keyof typeof product.product.nutriments];
+                   const unit = product.product?.nutriments[`${nutri}_unit` as keyof typeof product.product.nutriments];
                     return (
                    <div key={nutri} className="flex flex-row justify-between">
                      <span className="capitalize flex flex-row flex-nowrap gap-1">
@@ -171,7 +176,7 @@ const DrawerPop = () =>{
                        {nutri}
                      </span>
                      <span>
-                       {typeof value === "number" ? `${allowOneDecimal(value)}${unit || ""}` : "NaN"}
+                       {typeof value === "number" ? `${allowOneDecimal(value)}${unit || ""}` : "-"}
                      </span>
                    </div>
                    );
