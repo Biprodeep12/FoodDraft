@@ -4,6 +4,7 @@ import { NextPageContext } from "next";
 import { Filter, Loader2, Plus, Search, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import { useProduct } from "@/Context/productContext";
+import Link from "next/link";
 
 interface Product {
   product_name: string;
@@ -70,9 +71,7 @@ export default function SearchPage({
 
     try {
       const res = await fetch(
-        `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${encodeURIComponent(
-          String(query.id)
-        )}&nutrition_grades_tags=&page=${pageToFetch}&fields=product_name,code,image_front_url,nutrition_grades_tags`
+        `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${query.id}&nutrition_grades_tags=&page=${pageToFetch||1}&fields=product_name,code,image_front_url,nutrition_grades_tags`
       );
 
       const data: ApiResponse = await res.json();
@@ -132,9 +131,9 @@ export default function SearchPage({
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex flex-row items-center gap-2 text-3xl font-extrabold">
+            <Link href="/" className="flex flex-row items-center gap-2 text-3xl font-extrabold cursor-pointer">
               Food<span className="text-emerald-500">Draft</span>
-            </div>
+            </Link>
             <div className="flex items-center gap-3">
               <button className="p-2 text-gray-600 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors">
                 <Star className="h-5 w-5" />
@@ -263,7 +262,7 @@ export default function SearchPage({
               <button
                 onClick={loadMore}
                 disabled={loading}
-                className="inline-flex gap-2 items-center px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:cursor-not-allowed"
+                className="inline-flex gap-2 cursor-pointer items-center px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
@@ -295,9 +294,7 @@ SearchPage.getInitialProps = async (ctx: NextPageContext) => {
 
   try {
     const res = await fetch(
-      `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${encodeURIComponent(
-        String(query.id)
-      )}&nutrition_grades_tags=&page=1&fields=product_name,code,image_front_url,nutrition_grades_tags`
+      `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${query.id}&nutrition_grades_tags=&page=1&fields=product_name,code,image_front_url,nutrition_grades_tags`
     );
 
     const data: ApiResponse = await res.json();
