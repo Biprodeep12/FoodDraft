@@ -1,6 +1,8 @@
 export interface ProductData {
   code: string;
   product: {
+    additives_tags:string[];
+    image_front_url:string;
     nutriments: {
       carbohydrates: number;
       carbohydrates_100g: number;
@@ -49,21 +51,9 @@ export interface ProductData {
       sugars_unit: string;
       sugars_value: number;
     };
+    nutrition_data_per: string;
     nutrition_grades: string;
     product_name: string;
-    selected_images: {
-      front: {
-        display: {
-          en: string;
-        };
-        small: {
-          en: string;
-        };
-        thumb: {
-          en: string;
-        };
-      };
-    };
   };
   status: number;
   status_verbose: string;

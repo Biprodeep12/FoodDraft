@@ -11,7 +11,7 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [barcode, setBarcode] = useState<string>('');
+  const [barcode, setBarcode] = useState<string>('8904063230010');
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -22,7 +22,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setLoading(true);
       try {
         const res = await fetch(
-          `https://world.openfoodfacts.net/api/v2/product/${barcode}?fields=product_name,nutriscore_data,nutriments,nutrition_grades,selected_images`
+          `https://world.openfoodfacts.net/api/v2/product/${barcode}?fields=product_name,nutriscore_data,nutriments,nutrition_grades,image_front_url,nutrition_data_per,additives_tags`
         );
         const data = await res.json();
         setProduct(data);

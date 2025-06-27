@@ -97,7 +97,7 @@ const DrawerPop = () =>{
               <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                 <div className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 p-4 shadow-md">
                   <Image
-                    src={product.product.selected_images.front.display.en || "/placeholder.svg"}
+                    src={product.product.image_front_url || "/placeholder.svg"}
                     width={300}
                     height={300}
                     priority
@@ -141,7 +141,7 @@ const DrawerPop = () =>{
 
               {product.product && (
                 <div className="rounded-lg bg-white p-6 shadow-md">
-                  <span className="text-2xl font-bold text-gray-800">Nutrients (per 100g)</span>
+                  <span className="text-2xl font-bold text-gray-800">Nutrients (per {product.product.nutrition_data_per})</span>
                   <div className="grid gap-4 md:grid-cols-2 mt-5">
                     <NutrientList title="Negative Points" data={productNutri?.notSafe || []} color="red" />
                     <NutrientList title="Positive Points" data={productNutri?.safe || []} color="green" />
@@ -150,7 +150,7 @@ const DrawerPop = () =>{
               )}
 
               <div className="rounded-lg bg-white p-6 shadow-md">
-                <h2 className="mb-4 text-2xl font-bold text-gray-800">All Nutrition Information (per 100g)</h2>
+                <h2 className="mb-4 text-2xl font-bold text-gray-800">All Nutrition Information (per {product.product.nutrition_data_per})</h2>
                 <div className="grid gap-4 md:grid-cols-2 bg-gray-50 rounded-md shadow-sm p-3">
                   {[
                   "energy-kcal",

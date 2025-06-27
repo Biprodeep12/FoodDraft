@@ -23,19 +23,20 @@ export const evaluateNutrientSafety = (product: ProductData): NutrientStatusDeta
   };
 
   const classify = (
-  name: string,
-  value: number,
-  unit: string,
-  isSafe: boolean
-) => {
-  const item = { name, value, unit };
-  if (isSafe) {
-    safe.push(item);
-  } else {
-    notSafe.push(item);
-  }
-};
+    name: string,
+    value: number | undefined,
+    unit: string,
+    isSafe: boolean
+  ) => {
+    if (value === undefined || value === null || isNaN(value)) return;
 
+    const item = { name, value, unit };
+    if (isSafe) {
+      safe.push(item);
+    } else {
+      notSafe.push(item);
+    }
+  };
 
   const carbs = nutriments.carbohydrates_100g;
   classify(
@@ -85,12 +86,12 @@ export const evaluateNutrientSafety = (product: ProductData): NutrientStatusDeta
     saturatedFat <= safeRanges.saturatedFat.max
   );
 
-  const sodium = nutriments.sodium_100g * 1000;
+  const sodium = nutriments.sodium_100g !== undefined ? nutriments.sodium_100g * 1000 : undefined;
   classify(
     "sodium",
     sodium,
     "mg",
-    sodium <= safeRanges.sodium.max
+    sodium !== undefined && sodium <= safeRanges.sodium.max
   );
 
   const sugars = nutriments.sugars_100g;
