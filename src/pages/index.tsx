@@ -1,17 +1,15 @@
 import DrawerPop from "@/components/home/drawerPop";
 import Scanner from "@/components/home/scanner";
 import { ArrowRight, CheckCircle, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
   const [searchInput, setSearchInput] = useState("")
-  const router = useRouter();
 
   const HandlePush = () =>{
     if(!searchInput) return;
-    router.push(`/search/${searchInput}`)
+    window.location.href = `/search/${searchInput}`
   }
 
   return (
