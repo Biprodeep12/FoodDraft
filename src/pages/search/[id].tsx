@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { NextPageContext } from "next";
-import { Filter, Grid3X3, Loader2, Plus, Search, ShoppingCart, Star } from "lucide-react";
+import { Filter, Loader2, Plus, Search, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 
 interface Product {
