@@ -1,6 +1,6 @@
 import DrawerPop from "@/components/home/drawerPop";
 import Scanner from "@/components/home/scanner";
-import { Apple, ArrowRight, CheckCircle, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
