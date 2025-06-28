@@ -6,10 +6,17 @@ export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
   const [searchInput, setSearchInput] = useState("")
 
-  const HandlePush = () =>{
-    if(!searchInput) return;
-    window.location.href = `/search/${searchInput}`
-  }
+  const HandlePush = () => {
+    if (!searchInput) return;
+    window.open(`/search/${searchInput}`, '_blank', 'noopener,noreferrer');
+  };
+
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      HandlePush();
+    }
+  };
 
   return (
     <>
@@ -203,6 +210,7 @@ export default function Home() {
                 placeholder="e.g., 'apple', 'protein bar', 'oat milk'"
                 value={searchInput}
                 onChange={(e)=>setSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-md"
               />
             </div>
