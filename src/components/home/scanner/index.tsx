@@ -187,8 +187,9 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
     <div
       className={`fixed ${
         openScanner ? "scale-100 opacity-100" : "scale-0 opacity-0"
-      } transition-all duration-300 bg-gradient-to-br from-gray-900 via-black to-gray-800 inset-0 z-50 flex flex-col`}
+      } transition-all duration-300 bg-black inset-0 z-[1000] flex flex-col`}
     >
+      {/* bg-gradient-to-br from-gray-900 via-black to-gray-800 */}
       <div className="flex items-center justify-between p-4 bg-black/20 backdrop-blur-sm">
         <button
           onClick={closeScanner}
