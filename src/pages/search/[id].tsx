@@ -83,6 +83,12 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
     router.push({ pathname: router.pathname, query: { ...router.query, id: searchInput } }, undefined, { shallow: true });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      onSearch();
+    }
+  };
+
   const loadMore = () => {
     if (meta && meta.page < meta.page_count) {
       fetchProducts(meta.page + 1);
@@ -164,6 +170,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
               placeholder="Search for products..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900"
             />
           </div>
@@ -196,7 +203,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
 
         {meta && meta.page < meta.page_count && (
           <div className="flex flex-col items-center gap-3">
-            <button onClick={loadMore} disabled={loading} className="flex gap-2 px-6 py-3 cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl disabled:bg-gray-400">
+            <button onClick={loadMore} disabled={loading} className="flex gap-2 px-6 py-3 items-center cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl disabled:bg-gray-400">
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" /> Loading...
