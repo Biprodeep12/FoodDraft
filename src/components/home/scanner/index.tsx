@@ -2,7 +2,7 @@ import type React from "react"
 import { ArrowLeft, LoaderCircle, X, Upload, Keyboard, Camera } from "lucide-react"
 import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode"
 import { useProduct } from "@/Context/productContext"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback, useMemo } from "react"
 
 interface Props {
   openScanner: boolean
@@ -20,15 +20,35 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
   const [manualBarcode, setManualBarcode] = useState("")
   const { setBarcode } = useProduct()
 
-  const startScanner = async () => {
+  const scannerConfig = useMemo(() => ({
+    fps: 10,
+    qrbox: { width: 250, height: 250 },
+    aspectRatio: 1.0,
+  }), [])
+
+  const cleanupScanner = useCallback(async () => {
+    if (scannerRef.current?.getState() === Html5QrcodeScannerState.NOT_STARTED) {
+      return
+    }
+
+    try {
+      await scannerRef.current?.stop()
+      await scannerRef.current?.clear()
+    } catch (err) {
+      console.warn("Error while stopping scanner:", err)
+    } finally {
+      setIsScanning(false)
+      scannerRef.current = null
+    }
+  }, [])
+
+  const startScanner = useCallback(async () => {
     if (isScanning || loading) return
 
     setLoading(true)
     setError(null)
     setResult(null)
     setShowManualInput(false)
-
-    await new Promise((resolve) => setTimeout(resolve, 100))
 
     try {
       const scannerElement = document.getElementById("scanner")
@@ -39,8 +59,6 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
       }
 
       const devices = await Html5Qrcode.getCameras()
-      console.log("Available cameras:", devices)
-
       if (devices.length === 0) {
         setError("No cameras found on this device.")
         setLoading(false)
@@ -49,34 +67,26 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
 
       const cameraId = devices.find((device) => device.label.toLowerCase().includes("back"))?.id || devices[0]?.id
 
-      console.log("Using camera:", cameraId)
+      await cleanupScanner()
 
       const html5QrCode = new Html5Qrcode("scanner")
       scannerRef.current = html5QrCode
 
-      const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-      }
-
       await html5QrCode.start(
         cameraId,
-        config,
+        scannerConfig,
         (decodedText) => {
-          console.log("Barcode scanned:", decodedText)
           setBarcode(decodedText)
           setResult(decodedText)
           setOpenScanner(false)
-          stopScanner()
+          cleanupScanner()
         },
         (scanError) => {
-          console.log(scanError)
-        },
+          console.log("Scan error:", scanError)
+        }
       )
 
       setIsScanning(true)
-      console.log("Scanner started successfully")
     } catch (err) {
       console.error("Failed to start scanner:", err)
       setError(`Failed to start scanner: ${err instanceof Error ? err.message : "Unknown error"}`)
@@ -84,23 +94,9 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isScanning, loading, cleanupScanner, scannerConfig, setBarcode, setOpenScanner])
 
-  const stopScanner = async () => {
-    if (scannerRef.current?.getState() === Html5QrcodeScannerState.NOT_STARTED) {
-      return
-    }
-
-    try {
-      await scannerRef.current?.stop()
-      await scannerRef.current?.clear()
-    } catch (err) {
-      console.warn("Error while stopping scanner:", err)
-    }
-    setIsScanning(false)
-  }
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
@@ -109,6 +105,8 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
     setResult(null)
 
     try {
+      await cleanupScanner()
+      
       const html5QrCode = new Html5Qrcode("scanner")
       const result = await html5QrCode.scanFile(file, true)
       setBarcode(result)
@@ -123,31 +121,40 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
         fileInputRef.current.value = ""
       }
     }
-  }
+  }, [cleanupScanner, setBarcode, setOpenScanner])
 
-  const handleManualSubmit = () => {
+  const handleManualSubmit = useCallback(() => {
     if (manualBarcode.trim()) {
       setBarcode(manualBarcode.trim())
       setResult(manualBarcode.trim())
       setOpenScanner(false)
     }
-  }
+  }, [manualBarcode, setBarcode, setOpenScanner])
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleManualSubmit()
     }
-  }
+  }, [handleManualSubmit])
+
+  const toggleManualInput = useCallback(() => {
+    setShowManualInput(prev => {
+      if (!prev && isScanning) {
+        cleanupScanner()
+      }
+      return !prev
+    })
+  }, [isScanning, cleanupScanner])
 
   useEffect(() => {
     if (openScanner) {
       startScanner()
     } else {
-      stopScanner()
+      cleanupScanner()
     }
 
     return () => {
-      stopScanner()
+      cleanupScanner()
     }
   }, [openScanner])
 
@@ -171,6 +178,11 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
     }
   }, [])
 
+  const closeScanner = useCallback(() => {
+    cleanupScanner()
+    setOpenScanner(false)
+  }, [cleanupScanner, setOpenScanner])
+
   return (
     <div
       className={`fixed ${
@@ -179,11 +191,9 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
     >
       <div className="flex items-center justify-between p-4 bg-black/20 backdrop-blur-sm">
         <button
-          onClick={() => {
-            stopScanner()
-            setOpenScanner(false)
-          }}
+          onClick={closeScanner}
           className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+          aria-label="Close scanner"
         >
           <ArrowLeft size={24} />
         </button>
@@ -267,6 +277,7 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
               onClick={() => fileInputRef.current?.click()}
               disabled={loading}
               className="w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 text-white border-2 border-white/20 hover:border-white/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              aria-label="Upload barcode image"
             >
               <Upload size={24} />
             </button>
@@ -275,9 +286,10 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
 
           <div className="text-center">
             <button
-              onClick={isScanning ? stopScanner : startScanner}
+              onClick={isScanning ? cleanupScanner : startScanner}
               disabled={loading || showManualInput}
               className="w-16 h-16 rounded-full bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-500 hover:border-blue-400 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              aria-label={isScanning ? "Stop scanner" : "Start camera scanner"}
             >
               {isScanning ? <X size={24} /> : <Camera size={24} />}
             </button>
@@ -286,12 +298,10 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
 
           <div className="text-center">
             <button
-              onClick={() => {
-                setShowManualInput(!showManualInput)
-                if (isScanning) stopScanner()
-              }}
+              onClick={toggleManualInput}
               disabled={loading}
               className="w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 text-white border-2 border-white/20 hover:border-white/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              aria-label="Enter barcode manually"
             >
               <Keyboard size={24} />
             </button>
@@ -310,7 +320,14 @@ const Scanner = ({ openScanner, setOpenScanner }: Props) => {
         </div>
       </div>
 
-      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+      <input 
+        ref={fileInputRef} 
+        type="file" 
+        accept="image/*" 
+        onChange={handleFileUpload} 
+        className="hidden" 
+        aria-hidden="true"
+      />
     </div>
   )
 }
