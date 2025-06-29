@@ -7,8 +7,10 @@ import {
   CheckCircle,
   ChevronDown,
   Facebook,
+  Github,
   Heart,
   Instagram,
+  Linkedin,
   Mail,
   MapPin,
   Phone,
@@ -317,7 +319,7 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <div className="relative flex-grow max-sm:w-full max-w-2xl">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 z-10" />
 
               <input
                 type="text"
@@ -522,19 +524,15 @@ export default function Home() {
               </p>
 
               <div className="flex gap-6">
-                <Facebook className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
-
-                <Twitter className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
-
+                <Github className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
+                <Linkedin className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
                 <Instagram className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
-
                 <Youtube className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
               </div>
             </div>
 
             <div>
-              <h3 className="text-2xl font-black mb-8 text-emerald-100">Product</h3>
-
+              <div className="text-2xl font-black mb-8 text-emerald-100">Product</div>
               <ul className="space-y-5 text-emerald-200">
                 <li>
                   <a
@@ -575,8 +573,7 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="text-2xl font-black mb-8 text-emerald-100">Support</h3>
-
+              <div className="text-2xl font-black mb-8 text-emerald-100">Support</div>
               <ul className="space-y-5 text-emerald-200">
                 <li>
                   <a
@@ -617,8 +614,7 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="text-2xl font-black mb-8 text-emerald-100">Contact</h3>
-
+              <div className="text-2xl font-black mb-8 text-emerald-100">Contact</div>
               <ul className="space-y-5 text-emerald-200">
                 <li className="flex items-center gap-4 group">
                   <Mail className="w-6 h-6 group-hover:text-white transition-colors duration-200" />
@@ -649,7 +645,6 @@ export default function Home() {
 
           <div className="border-t border-emerald-700/50 pt-10 flex flex-col sm:flex-row justify-between items-center">
             <p className="text-emerald-200 text-xl font-medium">© 2024 FoodDarft. All rights reserved.</p>
-
             <p className="text-emerald-200 text-xl font-medium mt-6 sm:mt-0">Made with ❤️ for healthier living</p>
           </div>
         </div>
