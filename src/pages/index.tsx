@@ -6,7 +6,6 @@ import {
   ArrowRight,
   CheckCircle,
   ChevronDown,
-  Facebook,
   Github,
   Heart,
   Instagram,
@@ -20,7 +19,6 @@ import {
   Search,
   Shield,
   Star,
-  Twitter,
   Youtube,
   Zap,
 } from "lucide-react"
