@@ -11,7 +11,6 @@ export default function Home() {
     window.open(`/search/${searchInput}`, '_blank', 'noopener,noreferrer');
   };
 
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       HandlePush();

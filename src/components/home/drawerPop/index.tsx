@@ -1,6 +1,6 @@
 import { useProduct } from "@/Context/productContext";
 import { evaluateNutrientSafety } from "@/utils/per100g";
-import { Info, X } from "lucide-react";
+import { FlaskConical, Info, X } from "lucide-react";
 import Image from "next/image";
 import { IconNutri } from "./icons";
 import { ProductAI } from "./ProductAI";
@@ -96,9 +96,9 @@ const DrawerPop = () =>{
         {loading ?
         <Loader/>
         :
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto md:p-6">
           {product?.status === 1 ? (
-            <div className="grid gap-8">
+            <div className="grid gap-8 max-md:pt-6">
               <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                 <div className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 p-4 shadow-md">
                   <Image
@@ -114,7 +114,9 @@ const DrawerPop = () =>{
                   <div className="text-4xl font-bold text-gray-900">
                     {product.product.product_name || "Product Name Not Found"}
                   </div>
-                  <p className="mt-2 text-lg italic text-gray-600">Barcode: {product.code || "XXXXXXX"}</p>
+                  <span className="mt-2 text-lg italic text-gray-600">Barcode: {product.code || "XXXXXXX"}</span>
+
+                  <div className="text-2xl font-bold text-gray-900">Brand: <span className="text-gray-500">{product.product.brands || "Not Found"}</span></div>
 
                   <div className="mt-6 flex flex-wrap items-center justify-center gap-6 md:justify-start">
                     <div className="flex flex-col items-center gap-2">
@@ -145,18 +147,18 @@ const DrawerPop = () =>{
               </div>
 
               {product.product && (
-                <div className="rounded-lg bg-white p-6 shadow-md">
-                  <span className="text-2xl font-bold text-gray-800">Nutrients (per {product.product.nutrition_data_per})</span>
-                  <div className="grid gap-4 md:grid-cols-2 mt-5">
+                <div className="md:rounded-lg bg-white p-6 shadow-md">
+                  <span className="text-2xl font-bold text-gray-800">Nutrients (per 100g/100ml)</span>
+                  <div className="grid gap-4 md:grid-cols-2 mt-4">
                     <NutrientList title="Negative Points" data={productNutri?.notSafe || []} color="red" />
                     <NutrientList title="Positive Points" data={productNutri?.safe || []} color="green" />
                   </div>
                 </div>
               )}
 
-              <div className="rounded-lg bg-white p-6 shadow-md">
-                <div className="mb-4 text-2xl font-bold text-gray-800">All Nutrition Information (per {product.product.nutrition_data_per})</div>
-                <div className="grid gap-4 md:grid-cols-2 bg-gray-50 rounded-md shadow-sm p-3">
+              <div className="md:rounded-lg bg-white p-6 shadow-md">
+                <span className="mb-4 text-2xl font-bold text-gray-800">All Nutrition Information (per 100g/100ml)</span>
+                <div className="grid gap-2 md:grid-cols-2 bg-gray-50 rounded-md shadow-sm p-3 mt-4">
                   {[
                   "energy-kcal",
                   "carbohydrates",
@@ -183,6 +185,50 @@ const DrawerPop = () =>{
                  })}
                 </div>
               </div>
+
+              <div className="grid md:gap-4 gap-8 md:grid-cols-2 mt-5">
+                <div className="md:rounded-lg bg-white p-6 shadow-md">
+                  <span className="mb-4 text-2xl font-bold text-gray-800 flex flex-row items-center gap-2">Additives <FlaskConical className="text-orange-600"/></span>
+                  <div className="grid gap-2 bg-gray-50 rounded-md shadow-sm p-3 mt-4">
+                    {product.product.additives_tags && product.product.additives_tags.length > 0 ? (
+                      product.product.additives_tags.map((tag) => {
+                      const code = tag.replace("en:", "").toLowerCase();
+                      return (
+                        <div key={tag} className="flex flex-row justify-between">
+                          <span className="capitalize flex flex-row flex-nowrap gap-1">
+                            <Info className="text-gray-400"/>
+                            {code}
+                          </span>
+                          <div onClick={()=> window.open(`https://world.openfoodfacts.org/additive/${code}`, '_blank', 'noopener,noreferrer')} className="text-blue-600 cursor-pointer hover:underline">View Details</div>
+                        </div>
+                      );
+                    })
+                    ) : (
+                   <div className="flex w-full text-center font-extrabold italic">Not Found</div>
+                    )}  
+                 </div>
+               </div>
+                <div className="md:rounded-lg bg-white p-6 shadow-md">
+                  <span className="mb-4 text-2xl font-bold text-gray-800">Ingredients</span>
+                  <div className="flex flex-wrap gap-2 bg-gray-50 rounded-md shadow-sm p-3 mt-4">
+                    {product.product.ingredients_tags && product.product.ingredients_tags.length > 0 ? (
+                      product.product.ingredients_tags.map((tag, index) => {
+                      const code = tag.replace("en:", "").toLowerCase();
+                      const isLast = index === product.product.ingredients_tags.length - 1;
+                      return (
+                          <div key={tag} className="capitalize flex flex-row items-center flex-nowrap gap-2">
+                            {code}
+                            {!isLast && <div className="w-1 h-1 rounded-full bg-gray-700"></div>}
+                          </div>
+                      );
+                    })
+                    ) : (
+                   <div className="flex w-full text-center font-extrabold italic">Not Found</div>
+                    )}  
+                 </div>
+               </div>
+             </div>
+
               <ProductAI nutri={product.product.product_name}/>
             </div>
           ) : (

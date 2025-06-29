@@ -92,7 +92,7 @@ const handleSendMessage = useCallback(async (customMessage?: string) => {
   const suggestedQuestions = useMemo(() => questions, [questions]);
 
   return (
-    <div className="max-w-xl w-full mx-auto rounded-lg bg-white p-6 shadow-md">
+    <div className="max-w-xl w-full mx-auto md:rounded-lg bg-white p-6 shadow-md">
       <div className="text-2xl font-bold text-gray-800 mb-4">Ask AI Suggestions</div>
 
       <div className="space-y-2 mb-4 max-h-[500px] overflow-auto">

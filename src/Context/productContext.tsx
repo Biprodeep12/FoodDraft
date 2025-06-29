@@ -22,7 +22,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setLoading(true);
       try {
         const res = await fetch(
-          `https://world.openfoodfacts.net/api/v2/product/${barcode}?fields=product_name,nutriments,nutrition_grades,,nutrition_data_per,image_front_url`
+          `https://world.openfoodfacts.net/api/v2/product/${barcode}?fields=product_name,additives_tags,brands,nutriments,nutrition_grades,image_front_url,ingredients_tags`
         );
         const data = await res.json();
         setProduct(data);
