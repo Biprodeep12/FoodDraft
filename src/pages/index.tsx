@@ -23,13 +23,12 @@ import {
   Zap,
 } from "lucide-react"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
-
   const [searchInput, setSearchInput] = useState("")
-
+	const targetRef = useRef<HTMLDivElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   const HandlePush = () => {
@@ -47,6 +46,10 @@ export default function Home() {
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
   }
+
+	const handleClick = () => {
+		targetRef.current?.scrollIntoView({ behavior: "smooth" });
+	};
 
   return (
     <>
@@ -93,7 +96,7 @@ export default function Home() {
                   </div>
                 </button>
 
-                <button className="px-4 py-4 cursor-pointer text-lg font-semibold text-gray-400 hover:text-gray-800 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300">
+                <button onClick={handleClick} className="px-4 py-4 cursor-pointer text-lg font-semibold text-gray-400 hover:text-gray-800 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300">
                   <Search className="w-7 h-7" />
                 </button>
               </div>
@@ -169,36 +172,31 @@ export default function Home() {
                 title: "Scan Barcode",
                 description: "Point your camera at any food product barcode and let our AI do the work",
                 icon: ScanLine,
-                color: "emerald",
               },
-
               {
                 step: "02",
                 title: "Get Analysis",
                 description: "Receive instant detailed nutritional information, ingredients, and health insights",
                 icon: Zap,
-                color: "teal",
               },
-
               {
                 step: "03",
                 title: "Make Decisions",
                 description: "Use personalized recommendations to make healthier food choices",
                 icon: Heart,
-                color: "emerald",
               },
             ].map((item, index) => (
               <div key={index} className="relative group">
                 <div className="bg-gradient-to-br from-white to-gray-50/50 p-12 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-gray-100 group-hover:border-emerald-200">
                   <div className="flex items-center gap-6 mb-10">
                     <div
-                      className={`w-20 h-20 bg-gradient-to-br from-${item.color}-100 to-${item.color}-200 rounded-[2rem] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                      className={`w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-[2rem] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
                     >
-                      <item.icon className={`w-10 h-10 text-${item.color}-600`} />
+                      <item.icon className={`w-10 h-10 text-emerald-600`}/>
                     </div>
 
                     <div
-                      className={`text-7xl font-black text-${item.color}-200 group-hover:text-${item.color}-500 transition-colors duration-300`}
+                      className={`text-7xl font-black text-emerald-200 group-hover:text-emerald-400 transition-colors duration-300`}
                     >
                       {item.step}
                     </div>
@@ -235,52 +233,32 @@ export default function Home() {
             {[
               {
                 icon: Scan,
-
                 title: "Lightning Fast Scanning",
-
                 description:
                   "Advanced AI-powered barcode recognition that works in milliseconds, even in low light conditions.",
-
                 color: "emerald",
-
                 gradient: "from-emerald-500 to-emerald-600",
-
                 bgColor: "bg-emerald-50",
-
                 iconColor: "text-emerald-600",
               },
-
               {
                 icon: Zap,
-
                 title: "Detailed Nutritional Analysis",
-
                 description:
                   "Get detailed nutritional breakdowns, complete ingredient lists, additives warnings, and daily value percentages for informed decisions.",
-
                 color: "teal",
-
                 gradient: "from-teal-500 to-teal-600",
-
                 bgColor: "bg-teal-50",
-
                 iconColor: "text-teal-600",
               },
-
               {
                 icon: Shield,
-
                 title: "AI-Powered Recommendations",
-
                 description:
                   "Receive AI-driven personalized recommendations based on your dietary preferences, health goals, and nutritional needs.",
-
                 color: "emerald",
-
                 gradient: "from-emerald-600 to-teal-600",
-
                 bgColor: "bg-gradient-to-br from-emerald-50 to-teal-50",
-
                 iconColor: "text-emerald-600",
               },
             ].map((feature, index) => (
@@ -317,7 +295,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-20 lg:py-28 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white relative overflow-hidden">
+      <div ref={targetRef} className="w-full px-4 sm:px-6 lg:px-8 py-20 lg:py-28 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div
             className="absolute inset-0"
@@ -330,7 +308,7 @@ export default function Home() {
         </div>
 
         <div className="max-w-4xl mx-auto relative z-10 text-center">
-          <h2 className="text-5xl sm:text-6xl font-black mb-10">Find What You&apos;re Looking For</h2>
+          <div className="text-5xl sm:text-6xl font-black mb-10">Find What You&apos;re Looking For</div>
 
           <p className="text-2xl text-emerald-100 mb-12 font-medium">
             Search our extensive database of food items by name, brand, or category to get detailed nutritional
@@ -536,7 +514,7 @@ export default function Home() {
                   <ScanLine className="w-9 h-9 text-white" />
                 </div>
 
-                <span className="text-3xl font-black">NutriScan</span>
+                <span className="text-3xl font-black">FoodDraft</span>
               </div>
 
               <p className="text-emerald-100 mb-8 text-xl font-medium leading-relaxed">
@@ -646,7 +624,7 @@ export default function Home() {
                   <Mail className="w-6 h-6 group-hover:text-white transition-colors duration-200" />
 
                   <span className="text-xl font-medium group-hover:text-white transition-colors duration-200">
-                    hello@nutriscan.com
+                    bipbose123@gmail.com
                   </span>
                 </li>
 
@@ -654,7 +632,7 @@ export default function Home() {
                   <Phone className="w-6 h-6 group-hover:text-white transition-colors duration-200" />
 
                   <span className="text-xl font-medium group-hover:text-white transition-colors duration-200">
-                    +1 (555) 123-4567
+                    8100596282
                   </span>
                 </li>
 
@@ -662,7 +640,7 @@ export default function Home() {
                   <MapPin className="w-6 h-6 group-hover:text-white transition-colors duration-200" />
 
                   <span className="text-xl font-medium group-hover:text-white transition-colors duration-200">
-                    San Francisco, CA
+                    Kolkata, India
                   </span>
                 </li>
               </ul>
@@ -670,7 +648,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-emerald-700/50 pt-10 flex flex-col sm:flex-row justify-between items-center">
-            <p className="text-emerald-200 text-xl font-medium">© 2024 NutriScan. All rights reserved.</p>
+            <p className="text-emerald-200 text-xl font-medium">© 2024 FoodDarft. All rights reserved.</p>
 
             <p className="text-emerald-200 text-xl font-medium mt-6 sm:mt-0">Made with ❤️ for healthier living</p>
           </div>
