@@ -96,8 +96,8 @@ export default function Home() {
                   </div>
                 </button>
 
-                <button onClick={handleClick} className="px-4 py-4 cursor-pointer text-lg font-semibold text-gray-400 hover:text-gray-800 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300">
-                  <Search className="w-7 h-7" />
+                <button onClick={handleClick} className="px-4 py-4 flex flex-row gap-2 cursor-pointer text-lg font-semibold text-gray-400 hover:text-gray-800 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300">
+                  <Search className="w-7 h-7" /> Search
                 </button>
               </div>
 
@@ -522,7 +522,7 @@ export default function Home() {
               </p>
 
               <div className="flex gap-6">
-                <Github className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
+                <Github onClick={()=>window.open(`https://github.com/Biprodeep12`, "_blank", "noopener,noreferrer")} className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
                 <Linkedin className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
                 <Instagram className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
                 <Youtube className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
