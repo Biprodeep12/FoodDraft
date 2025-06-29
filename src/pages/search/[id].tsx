@@ -120,7 +120,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
 
       {product.nutrition_grades_tags?.[0] && (
         <div className="absolute top-2 left-2 z-10">
-          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${getNutritionGradeColor(product.nutrition_grades_tags[0])}`}>
+          <span className={`w-8 h-8 p-1 rounded-xl flex items-center justify-center text-base font-bold ${getNutritionGradeColor(product.nutrition_grades_tags[0])}`}>
             {getNutritionGrade(product.nutrition_grades_tags?.[0])}
           </span>
         </div>

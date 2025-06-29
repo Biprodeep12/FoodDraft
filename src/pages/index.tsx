@@ -1,21 +1,23 @@
-import Scanner from "@/components/home/scanner";
-import { ArrowRight, CheckCircle, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react";
-import { useState } from "react";
+import type React from "react"
+
+import Scanner from "@/components/home/scanner"
+import { ArrowRight, CheckCircle, Scan, ScanLine, Search, Shield, Star, Zap } from "lucide-react"
+import { useState } from "react"
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
   const [searchInput, setSearchInput] = useState("")
 
   const HandlePush = () => {
-    if (!searchInput) return;
-    window.open(`/search/${searchInput}`, '_blank', 'noopener,noreferrer');
-  };
+    if (!searchInput) return
+    window.open(`/search/${searchInput}`, "_blank", "noopener,noreferrer")
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      HandlePush();
+      HandlePush()
     }
-  };
+  }
 
   return (
     <>
@@ -23,7 +25,7 @@ export default function Home() {
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/30 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200/30 rounded-full blur-3xl"></div>
-        </div> 
+        </div>
 
         <div className="flex flex-col items-center max-w-6xl w-full relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16 my-12 lg:my-20">
@@ -133,9 +135,9 @@ export default function Home() {
               },
               {
                 icon: Zap,
-                title: "Comprehensive Analysis",
+                title: "Detailed Nutritional Analysis",
                 description:
-                  "Get detailed nutritional breakdowns, ingredient lists, allergen warnings, and daily value percentages.",
+                  "Get detailed nutritional breakdowns, complete ingredient lists, additives warnings, and daily value percentages for informed decisions.",
                 color: "blue",
                 gradient: "from-blue-500 to-blue-600",
                 bgColor: "bg-blue-50",
@@ -143,9 +145,9 @@ export default function Home() {
               },
               {
                 icon: Shield,
-                title: "Personalized Insights",
+                title: "AI-Powered Recommendations",
                 description:
-                  "Receive tailored health recommendations based on your dietary preferences and nutritional goals.",
+                  "Receive AI-driven personalized recommendations based on your dietary preferences, health goals, and nutritional needs.",
                 color: "purple",
                 gradient: "from-purple-500 to-purple-600",
                 bgColor: "bg-purple-50",
@@ -159,21 +161,18 @@ export default function Home() {
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-500`}
                 ></div>
-
                 <div className="relative">
                   <div
                     className={`w-16 h-16 ${feature.bgColor} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
                   >
                     <feature.icon className={`w-8 h-8 ${feature.iconColor}`} />
                   </div>
-
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 group-hover:text-gray-800 transition-colors">
                     {feature.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors">
                     {feature.description}
                   </p>
-
                   <div className="mt-6 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                     <ArrowRight className={`w-5 h-5 ${feature.iconColor}`} />
                   </div>
@@ -181,7 +180,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-
         </div>
       </div>
 
@@ -195,12 +193,14 @@ export default function Home() {
             }}
           ></div>
         </div>
+
         <div className="max-w-3xl mx-auto relative z-10 text-center">
           <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Find What You&apos;re Looking For</div>
           <p className="text-lg sm:text-xl text-blue-100 mb-8">
             Search our extensive database of food items by name, brand, or category to get detailed nutritional
             information and insights.
           </p>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <div className="relative flex-grow max-sm:w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -208,7 +208,7 @@ export default function Home() {
                 type="text"
                 placeholder="e.g., 'apple', 'protein bar', 'oat milk'"
                 value={searchInput}
-                onChange={(e)=>setSearchInput(e.target.value)}
+                onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white/90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-md"
               />
@@ -220,9 +220,9 @@ export default function Home() {
               <div className="absolute inset-0 bg-blue-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
               <div className="relative flex items-center gap-3">
                 Search
-               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </div>
-           </button>
+            </button>
           </div>
         </div>
       </div>
@@ -259,7 +259,6 @@ export default function Home() {
                   <div className="bg-black rounded-[2.25rem] p-1">
                     <div className="bg-white rounded-[2rem] aspect-[9/19] overflow-hidden relative">
                       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-6 bg-black rounded-b-2xl z-10"></div>
-
                       <div className="h-full bg-gradient-to-br from-emerald-50 to-teal-50 flex flex-col">
                         <div className="h-10 flex items-center justify-between px-6 pt-2">
                           <div className="font-semibold text-sm">9:41</div>
@@ -305,5 +304,5 @@ export default function Home() {
 
       <Scanner openScanner={openScanner} setOpenScanner={setOpenScanner} />
     </>
-  );
+  )
 }
