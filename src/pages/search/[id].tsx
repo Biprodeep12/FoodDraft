@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { NextPageContext } from "next";
 import { Filter, Loader2, Plus, Search, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
@@ -44,6 +44,25 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [searchInput, setSearchInput] = useState("");
+  const [openSort, setOpenSort] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setOpenSort(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
   const fetchProducts = useCallback(async (pageToFetch = 1, replace = false) => {
     if (!query.id) return;
@@ -53,7 +72,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
 
     try {
       const res = await fetch(
-        `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${query.id}&nutrition_grades_tags=&page=${pageToFetch}&fields=product_name,code,image_front_url,nutrition_grades_tags`
+        `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${query.id}&nutrition_grades_tags=${query.garde||''}&sort_by=${query.sort||''}&page=${pageToFetch}&fields=product_name,code,image_front_url,nutrition_grades_tags`
       );
 
       const data: ApiResponse = await res.json();
@@ -72,16 +91,28 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
     } finally {
       setLoading(false);
     }
-  }, [query.id]);
+  }, [query]);
 
   useEffect(() => {
     if (query.id) fetchProducts(1, true);
   }, [query.id, fetchProducts]);
 
   const onSearch = () => {
-    if (!searchInput.trim()) return;
+    if (!searchInput.trim() || router.query.id === searchInput) return;
     router.push({ pathname: router.pathname, query: { ...router.query, id: searchInput } }, undefined, { shallow: true });
   };
+
+  const onSort = useCallback((sortProp: string) => {
+    if (router.query.sort === sortProp) return;
+    router.push(
+      {
+        pathname: router.pathname,
+        query: { ...router.query, sort: sortProp },
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [router]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -185,14 +216,26 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
               <Search className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold">Search Results</h2>
+              <div className="text-3xl font-bold">Search Results</div>
               <p className="text-sm text-gray-600">{products.length} Products Shown</p>
             </div>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-600 text-sm rounded-lg hover:border-emerald-300 hover:bg-emerald-50">
+          <div ref={dropdownRef} onClick={()=>setOpenSort(!openSort)} className="relative">
+          <button className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-gray-300 text-gray-600 text-sm rounded-lg hover:border-emerald-300 hover:bg-emerald-50">
             <Filter className="h-4 w-4 text-gray-500" />
             Filter
           </button>
+            {openSort && 
+            <div className="absolute top-10 right-0 z-20 text-lg text-gray-700 border border-gray-300 text-nowrap rounded-lg p-2 bg-white flex flex-col gap-1">
+              {[{name:"Most scanned products",prop:'popularity'},
+                {name:"Product with the Best Nutri-Score",prop:'nutriscore_score'},
+                {name:"Product with the Best Green-Score",prop:'environmental_score_score'},
+                {name:"Recently added products",prop:'created_t'},
+                {name:"Recently modified products",prop:'last_modified_t'}].map((nutri,index)=>(
+                <button onClick={()=>onSort(nutri.prop)} key={index} className="rounded-lg hover:bg-gray-50 cursor-pointer w-full text-left p-1">{nutri.name}</button>
+              ))}
+            </div>}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
@@ -244,7 +287,7 @@ SearchPage.getInitialProps = async (ctx: NextPageContext) => {
 
   try {
     const res = await fetch(
-      `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${query.id}&nutrition_grades_tags=&page=1&fields=product_name,code,image_front_url,nutrition_grades_tags`
+      `https://world.openfoodfacts.org/api/v2/search?categories_tags_en=${query.id}&nutrition_grades_tags=${query.garde||''}&sort_by=${query.sort||''}&page=1&fields=product_name,code,image_front_url,nutrition_grades_tags`
     );
 
     const data: ApiResponse = await res.json();
