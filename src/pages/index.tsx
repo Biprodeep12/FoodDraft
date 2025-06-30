@@ -71,7 +71,7 @@ export default function Home() {
               </div>
 
               <div className="hidden md:flex items-center gap-8">
-                <a href="/"
+                <a href="#"
                   className="text-gray-700 hover:text-emerald-600 font-semibold transition-colors duration-300"
                 >
                   Features
@@ -111,7 +111,7 @@ export default function Home() {
             >
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl mt-4 p-6 shadow-xl border border-white/20">
                 <div className="flex flex-col space-y-4">
-                  <a href="/"
+                  <a href="#"
                     className="text-left text-gray-700 hover:text-emerald-600 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50"
                   >
                     Features
