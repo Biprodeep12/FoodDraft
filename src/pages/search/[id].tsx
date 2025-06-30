@@ -223,7 +223,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
             <div className="w-16 h-16 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-4">
               <Search className="h-8 w-8 text-emerald-500" />
             </div>
-            <h3 className="text-xl font-semibold">No products found</h3>
+            <div className="text-xl font-semibold">No products found</div>
             <p className="text-gray-600">Try adjusting your search terms</p>
           </div>
         )}
