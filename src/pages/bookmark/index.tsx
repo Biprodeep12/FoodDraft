@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { collection, addDoc, deleteDoc, doc, getDocs, query as firestoreQuery, where } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 import { useMessages } from "@/Context/messagesContext";
+import { useAuth } from "@/Context/userContext";
 
 interface Product {
   product_name: string;
@@ -17,13 +18,21 @@ interface Product {
 export default function BookMark() {
   const { setBarcode } = useProduct();
   const { setMessage, setMessageError } = useMessages();
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [bookmarkedCodes, setBookmarkedCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProducts = async () => {
+  if (!user?.uid) {
+    setMessageError(true);
+    setMessage("Please log in to see your bookmarked products.");
+    setLoading(false);
+    return;
+  }
+
   try {
-    const querySnapshot = await getDocs(collection(db, "products"));
+    const querySnapshot = await getDocs(collection(db, "users", user.uid, "products"));
     const fetchedProducts: Product[] = [];
     const codes: string[] = [];
 
@@ -78,12 +87,19 @@ export default function BookMark() {
   image: string | undefined,
   nutriscore: string[] | undefined
   ) => {
+  if (!user?.uid) {
+    setMessage("Please log in to bookmark products.");
+    setMessageError(true);
+    return;
+  }
+
   try {
-    const q = firestoreQuery(collection(db, "products"), where("code", "==", code));
+    const productsRef = collection(db, "users", user.uid, "products");
+    const q = firestoreQuery(productsRef, where("code", "==", code));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      await addDoc(collection(db, "products"), {
+      await addDoc(productsRef, {
         code,
         name,
         image,
@@ -94,11 +110,10 @@ export default function BookMark() {
       setMessageError(false);
     } else {
       const docId = querySnapshot.docs[0].id;
-      await deleteDoc(doc(db, "products", docId));
+      await deleteDoc(doc(db, "users", user.uid, "products", docId));
       setBookmarkedCodes((prev) => prev.filter((c) => c !== code));
       setMessage("Product removed from bookmark!");
       setMessageError(true);
-      window.location.reload();
     }
   } catch (error) {
     setMessage("Error toggling bookmark: " + error);

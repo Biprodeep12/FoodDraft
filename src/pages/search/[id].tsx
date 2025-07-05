@@ -8,6 +8,7 @@ import { useMessages } from "@/Context/messagesContext";
 import Navbar from "@/components/navbar";
 import { db } from "@/firebase/firebase";
 import { collection, addDoc, deleteDoc, doc, getDocs, query as firestoreQuery, where } from "firebase/firestore";
+import { useAuth } from "@/Context/userContext";
 
 interface Product {
   product_name: string;
@@ -42,6 +43,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
   const { query } = router;
   const { setBarcode } = useProduct();
   const { setMessage, setMessageError } = useMessages();
+  const { user } = useAuth(); 
 
   const [products, setProducts] = useState<Product[]>(initialProducts || []);
   const [meta, setMeta] = useState<Meta | undefined>(initialMeta);
@@ -153,8 +155,9 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
 
   useEffect(() => {
   const fetchBookmarkedCodes = async () => {
+    if (!user?.uid) return;
     try {
-      const querySnapshot = await getDocs(collection(db, "products"));
+      const querySnapshot = await getDocs(collection(db, "users", user.uid, "products"));
       const codes: string[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -167,8 +170,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
   };
 
   fetchBookmarkedCodes();
-  }, []);
-
+  }, [user?.uid]);
 
   const toggleBookmark = async (
   code: string,
@@ -176,12 +178,19 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
   image: string | undefined,
   nutriscore: string[] | undefined
   ) => {
+  if (!user?.uid) {
+    setMessage("Please log in to bookmark products.");
+    setMessageError(true);
+    return;
+  }
+
   try {
-    const q = firestoreQuery(collection(db, "products"), where("code", "==", code));
+    const productsRef = collection(db, "users", user.uid, "products");
+    const q = firestoreQuery(productsRef, where("code", "==", code));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      await addDoc(collection(db, "products"), {
+      await addDoc(productsRef, {
         code,
         name,
         image,
@@ -192,7 +201,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
       setMessageError(false);
     } else {
       const docId = querySnapshot.docs[0].id;
-      await deleteDoc(doc(db, "products", docId));
+      await deleteDoc(doc(db, "users", user.uid, "products", docId));
       setBookmarkedCodes((prev) => prev.filter((c) => c !== code));
       setMessage("Product removed from bookmark!");
       setMessageError(true);
@@ -202,6 +211,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
     setMessageError(true);
   }
   };
+
 
   const ProductCard = ({ product }: { product: Product }) => (
     <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 border border-gray-200 hover:border-emerald-200 overflow-hidden relative">

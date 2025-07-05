@@ -19,18 +19,22 @@ import {
   ScanLine,
   Search,
   Shield,
+  User,
   X,
   Youtube,
   Zap,
 } from "lucide-react"
 
 import { useState } from "react"
+import { useAuth } from "@/Context/userContext"
+import Image from "next/image"
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
   const [searchInput, setSearchInput] = useState("")
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { user } = useAuth()
 
   const HandlePush = () => {
     if (!searchInput) return
@@ -91,6 +95,18 @@ export default function Home() {
                 >
                   Try Scanner
                 </button>
+                {user && 
+                <div className="relative cursor-pointer w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                  {user?.photoURL ?
+                    <Image
+                      src={user.photoURL || '/default-avatar.png'}
+                      alt={user.displayName || 'User'}
+                      width={40}
+                      height={40}
+                    />
+                    :
+                    <User size={25} color='black'/>}
+                </div>}
               </div>
 
               <div className="md:hidden">

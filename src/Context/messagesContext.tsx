@@ -22,7 +22,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
 export const useMessages = () => {
   const context = useContext(MessageContext);
-  if (!context) throw new Error('useProduct must be used within ProductProvider');
+  if (!context) throw new Error('useMessage must be used within MessageProvider');
   return context;
 };
 
