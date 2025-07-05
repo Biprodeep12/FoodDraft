@@ -1,10 +1,13 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { NextPageContext } from "next";
-import { Filter, Loader2, Plus, Search, ShoppingCart, Star } from "lucide-react";
+import { Bookmark, BookmarkCheck, Filter, Loader2, Plus, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useProduct } from "@/Context/productContext";
-import Link from "next/link";
+import { useMessages } from "@/Context/messagesContext";
+import Navbar from "@/components/navbar";
+import { db } from "@/firebase/firebase";
+import { collection, addDoc, deleteDoc, doc, getDocs, query as firestoreQuery, where } from "firebase/firestore";
 
 interface Product {
   product_name: string;
@@ -38,6 +41,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
   const router = useRouter();
   const { query } = router;
   const { setBarcode } = useProduct();
+  const { setMessage, setMessageError } = useMessages();
 
   const [products, setProducts] = useState<Product[]>(initialProducts || []);
   const [meta, setMeta] = useState<Meta | undefined>(initialMeta);
@@ -45,6 +49,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
   const [error, setError] = useState<string | undefined>(undefined);
   const [searchInput, setSearchInput] = useState("");
   const [openSort, setOpenSort] = useState(false);
+  const [bookmarkedCodes, setBookmarkedCodes] = useState<string[]>([]);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -146,6 +151,58 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
     return validGrades.includes(upperGrade) ? upperGrade : "X";
   }, []);
 
+  useEffect(() => {
+  const fetchBookmarkedCodes = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const codes: string[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.code) codes.push(data.code);
+      });
+      setBookmarkedCodes(codes);
+    } catch (error) {
+      console.error("Error fetching bookmarked products:", error);
+    }
+  };
+
+  fetchBookmarkedCodes();
+  }, []);
+
+
+  const toggleBookmark = async (
+  code: string,
+  name: string,
+  image: string | undefined,
+  nutriscore: string[] | undefined
+  ) => {
+  try {
+    const q = firestoreQuery(collection(db, "products"), where("code", "==", code));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      await addDoc(collection(db, "products"), {
+        code,
+        name,
+        image,
+        nutriscore: nutriscore ?? [],
+      });
+      setBookmarkedCodes((prev) => [...prev, code]);
+      setMessage("Product bookmarked successfully!");
+      setMessageError(false);
+    } else {
+      const docId = querySnapshot.docs[0].id;
+      await deleteDoc(doc(db, "products", docId));
+      setBookmarkedCodes((prev) => prev.filter((c) => c !== code));
+      setMessage("Product removed from bookmark!");
+      setMessageError(true);
+    }
+  } catch (error) {
+    setMessage("Error toggling bookmark: " + error);
+    setMessageError(true);
+  }
+  };
+
   const ProductCard = ({ product }: { product: Product }) => (
     <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 border border-gray-200 hover:border-emerald-200 overflow-hidden relative">
 
@@ -156,6 +213,14 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
           </span>
         </div>
       )}
+
+      <button onClick={()=>toggleBookmark(product.code,product.product_name,product.image_front_url,product.nutrition_grades_tags)} className="absolute top-2 right-2 z-10 cursor-pointer rounded-xl bg-white hover:bg-gray-100 shadow">
+          {bookmarkedCodes.includes(product.code) ? (
+           <BookmarkCheck className="w-8.5 h-8.5 p-2 text-emerald-500" />
+          ) : (
+           <Bookmark className="w-8.5 h-8.5 p-2 text-gray-400" />
+          )}
+      </button>
 
       <div className="relative aspect-square bg-gray-50">
         <Image
@@ -180,18 +245,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
-          <Link href="/" className="flex items-center gap-2 text-3xl font-extrabold">
-            Food<span className="text-emerald-500">Draft</span>
-          </Link>
-          <button className="p-2 text-gray-600 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg">
-            <Star className="h-5 w-5" />
-          </button>
-        </div>
-      </nav>
-
+      <Navbar/>
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex justify-center gap-5 mb-6">
           <div className="relative w-full max-w-xl">
@@ -225,16 +279,15 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
             <Filter className="h-4 w-4 text-gray-500" />
             Filter
           </button>
-            {openSort && 
-            <div className="absolute top-10 right-0 z-20 text-lg text-gray-700 border border-gray-300 text-nowrap rounded-lg p-2 bg-white flex flex-col gap-1">
+            <div className={`absolute ${openSort? 'opacity-100 flex':'opacity-0 hidden'} transition-all duration-200 top-10 right-0 z-20 text-lg text-gray-700 border border-gray-300 text-nowrap rounded-lg p-2 bg-white flex-col gap-1`}>
               {[{name:"Most scanned products",prop:'popularity'},
                 {name:"Product with the Best Nutri-Score",prop:'nutriscore_score'},
                 {name:"Product with the Best Green-Score",prop:'environmental_score_score'},
                 {name:"Recently added products",prop:'created_t'},
                 {name:"Recently modified products",prop:'last_modified_t'}].map((nutri,index)=>(
-                <button onClick={()=>onSort(nutri.prop)} key={index} className="rounded-lg hover:bg-gray-50 cursor-pointer w-full text-left p-1">{nutri.name}</button>
+                <button onClick={()=>onSort(nutri.prop)} key={index} className={`rounded-lg hover:bg-gray-50 ${router.query.sort === nutri.prop?'font-bold':''} cursor-pointer w-full text-left p-1`}>{nutri.name}</button>
               ))}
-            </div>}
+            </div>
           </div>
         </div>
 
