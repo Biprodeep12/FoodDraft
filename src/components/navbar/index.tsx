@@ -59,10 +59,10 @@ const Navbar = () => {
                       <UserRound className="h-5 w-5" />
                       Profile
                     </a>
-                    <a href="/bookmark" target="_blank" className="w-full text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                    <Link href="/bookmark" target="_blank" className="w-full text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
                       <Bookmark className="h-5 w-5" />
                       Bookmarks
-                    </a>
+                    </Link>
                     <div className="w-full bg-gray-200 h-[1px]"></div>
                     <button onClick={handleLogout} className="text-red-500 font-bold text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer w-full flex items-center gap-2">
                       <LogOut className="h-5 w-5" />
@@ -93,12 +93,12 @@ const Navbar = () => {
             >
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl mt-4 p-6 shadow-xl border border-white/20">
                 <div className="flex flex-col space-y-4">
-                  <a href="/bookmark"
+                  <Link href="/bookmark" target="_blank"
                     className="text-left flex items-center gap-3 text-gray-700 hover:text-emerald-600 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50"
                   >
                     <Bookmark className="h-5 w-5"/>
                     Bookmarks
-                  </a>
+                  </Link>
                   {user && 
                   <>
                   <a href="/profile" target="_blank">
