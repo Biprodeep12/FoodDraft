@@ -4,12 +4,14 @@ import Scanner from "@/components/home/scanner"
 
 import {
   ArrowRight,
+  Bookmark,
   CheckCircle,
   ChevronDown,
   Github,
   Heart,
   Instagram,
   Linkedin,
+  LogOut,
   Mail,
   MapPin,
   Menu,
@@ -20,14 +22,17 @@ import {
   Search,
   Shield,
   User,
+  UserRound,
   X,
   Youtube,
   Zap,
 } from "lucide-react"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useAuth } from "@/Context/userContext"
 import Image from "next/image"
+import { signOut } from "firebase/auth"
+import { auth } from "@/firebase/firebase"
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
@@ -35,6 +40,30 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user } = useAuth()
+  const [openDropdown, setOpenDropdown] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    window.location.reload();
+  };
 
   const HandlePush = () => {
     if (!searchInput) return
@@ -96,17 +125,34 @@ export default function Home() {
                   Try Scanner
                 </button>
                 {user && 
-                <div className="relative cursor-pointer w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                  {user?.photoURL ?
-                    <Image
-                      src={user.photoURL || '/default-avatar.png'}
-                      alt={user.displayName || 'User'}
-                      width={40}
-                      height={40}
+                <div ref={dropdownRef} className="relative">
+                {user?.photoURL ?
+                 <button onClick={()=>setOpenDropdown(!openDropdown)} className="cursor-pointer w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                  <Image
+                    src={user.photoURL || '/default-avatar.png'}
+                    alt={user.displayName || 'User'}
+                    width={40}
+                    height={40}
                     />
-                    :
-                    <User size={25} color='black'/>}
-                </div>}
+                 </button>
+                  :
+                  <User size={25} color='black'/>}
+                  <div className={`rounded-lg bg-white p-3 shadow ${openDropdown?'flex opacity-100':'hidden opacity-0'} transition-all duration-200 flex-col gap-[5px] absolute top-14 right-0 w-[200px]`}>
+                    <a href="/profile" target="_blank" className="w-full text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                      <UserRound className="h-5 w-5" />
+                      Profile
+                    </a>
+                    <a href="/bookmark" target="_blank" className="w-full text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                      <Bookmark className="h-5 w-5" />
+                      Bookmarks
+                    </a>
+                    <div className="w-full bg-gray-200 h-[1px]"></div>
+                    <button onClick={handleLogout} className="text-red-500 font-bold text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer w-full flex items-center gap-2">
+                      <LogOut className="h-5 w-5" />
+                      Logout
+                    </button>
+                  </div>
+                 </div>}
               </div>
 
               <div className="md:hidden">
@@ -122,7 +168,7 @@ export default function Home() {
 
             <div
               className={`md:hidden transition-all duration-300 ease-in-out ${
-                mobileMenuOpen ? "max-h-96 opacity-100 pb-6" : "max-h-0 opacity-0 overflow-hidden"
+                mobileMenuOpen ? "max-h-110 opacity-100 pb-6" : "max-h-0 opacity-0 overflow-hidden"
               }`}
             >
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl mt-4 p-6 shadow-xl border border-white/20">
@@ -151,6 +197,29 @@ export default function Home() {
                   >
                     Try Scanner
                   </button>
+                  {user && 
+                  <>
+                  <a href="/profile" target="_blank">
+                    <div className="flex items-center gap-3 text-gray-700 hover:text-emerald-600 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
+                      {user?.photoURL ? (
+                        <Image
+                          src={user.photoURL || '/default-avatar.png'}
+                          alt={user.displayName || 'User'}
+                          width={40}
+                          height={40}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      ) : (
+                        <User size={25} color='black' />
+                      )}
+                      Profile
+                    </div>
+                  </a>
+                  <button className="flex items-center gap-3 text-red-500 hover:text-emerald-600 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
+                    <LogOut className="h-5 w-5" />
+                    <span onClick={handleLogout}>Logout</span>
+                  </button>
+                  </>}
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import Navbar from "@/components/navbar";
 import { useProduct } from "@/Context/productContext";
-import { Bookmark, BookmarkCheck, Filter, Loader2, ShoppingCart} from "lucide-react";
+import { Bookmark, BookmarkCheck, Loader2, ShoppingCart} from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { collection, addDoc, deleteDoc, doc, getDocs, query as firestoreQuery, where } from "firebase/firestore";
@@ -23,43 +23,60 @@ export default function BookMark() {
   const [bookmarkedCodes, setBookmarkedCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchProducts = async () => {
-  if (!user?.uid) {
-    setMessageError(true);
-    setMessage("Please log in to see your bookmarked products.");
-    setLoading(false);
-    return;
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.uid) {
+        setProducts([]);
+        setBookmarkedCodes([]);
+        setLoading(false);
+        return;
+      }
 
-  try {
-    const querySnapshot = await getDocs(collection(db, "users", user.uid, "products"));
-    const fetchedProducts: Product[] = [];
-    const codes: string[] = [];
+      setLoading(true);
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      fetchedProducts.push({
-        code: data.code,
-        product_name: data.name,
-        image_front_url: data.image,
-        nutrition_grades_tags: data.nutriscore ?? [],
-      });
-      codes.push(data.code);
-    });
+      try {
+        const querySnapshot = await getDocs(collection(db, "users", user.uid, "products"));
+        const fetchedProducts: Product[] = [];
+        const codes: string[] = [];
 
-    setProducts(fetchedProducts);
-    setBookmarkedCodes(codes);
-  } catch (error) {
-    setMessageError(true);
-    setMessage("Failed to fetch products. Error: " + error);
-  } finally {
-    setLoading(false);
-  }
-  };
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          fetchedProducts.push({
+            code: data.code,
+            product_name: data.name,
+            image_front_url: data.image,
+            nutrition_grades_tags: data.nutriscore ?? [],
+          });
+          codes.push(data.code);
+        });
+
+        setProducts(fetchedProducts);
+        setBookmarkedCodes(codes);
+      } catch (error) {
+        setMessageError(true);
+        setMessage("Failed to fetch products. Error: " + error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const timeout = setTimeout(() => {
+      if (!user?.uid) {
+        setMessage("Please log in to bookmark products.");
+        setMessageError(true);
+      } else {
+        setMessage('');
+        setMessageError(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [user]);
+
 
   const getNutritionGradeColor = (grade: string) => {
     switch (grade?.toLowerCase()) {
@@ -165,34 +182,45 @@ export default function BookMark() {
     <div className="min-h-screen bg-gray-50">
       <Navbar/>
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center mb-8">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-emerald-500 rounded-xl">
               <Bookmark className="h-6 w-6 text-white" />
             </div>
               <div className="text-sm text-gray-600">{products.length} Products Saved</div>
           </div>
-          <div className="relative">
-            <button className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-gray-300 text-gray-600 text-sm rounded-lg hover:border-emerald-300 hover:bg-emerald-50">
-              <Filter className="h-4 w-4 text-gray-500" />
-               Filter
-            </button>
-          </div>
         </div>
 
-        {loading && 
+        {loading ? (
         <div className="flex justify-center my-10">
           <div className="flex mx-auto gap-2 px-6 py-3 items-center cursor-pointer bg-emerald-500 text-white rounded-xl">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading...
           </div>
         </div>
-        }
+        ): !user?.uid ? (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-4">
+              <Bookmark className="h-8 w-8 text-emerald-500" />
+            </div>
+            <div className="text-xl font-semibold">Login to BookMark your Products</div>
+            <div className="text-gray-600 mb-5">Save your Products</div>
+            <button onClick={()=>window.location.href='/auth'} className="mx-auto font-bold gap-2 px-6 py-3 cursor-pointer bg-emerald-500 hover:bg-emerald-600 hover:scale-105 transtion-all duration-200 text-white rounded-xl">
+              Sign In / Sign Up
+            </button>
+          </div>) : products.length === 0 ?(
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-4">
+              <Bookmark className="h-8 w-8 text-emerald-500" />
+            </div>
+            <div className="text-xl font-semibold">No Bookmarks found</div>
+            <div className="text-gray-600">Try Bookmarking Products</div>
+          </div>
+        ):(
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {products.map((product) => (
             <ProductCard key={product.code} product={product} />
           ))}
-        </div>
-
+        </div>)}
       </div>
     </div>    
     )

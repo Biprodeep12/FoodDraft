@@ -102,6 +102,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
 
   useEffect(() => {
     if (query.id) fetchProducts(1, true);
+    else setBookmarkedCodes([]);
   }, [query.id, fetchProducts]);
 
   const onSearch = () => {
@@ -330,7 +331,7 @@ export default function SearchPage({ initialProducts, initialMeta }: PageProps) 
               <Search className="h-8 w-8 text-emerald-500" />
             </div>
             <div className="text-xl font-semibold">No products found</div>
-            <p className="text-gray-600">Try adjusting your search terms</p>
+            <div className="text-gray-600">Try adjusting your search terms</div>
           </div>
         )}
 
