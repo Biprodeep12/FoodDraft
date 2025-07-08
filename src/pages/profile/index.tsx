@@ -10,7 +10,6 @@ import {
   Heart,
   Camera,
   Award,
-  TrendingUp,
   Save,
   X,
   Edit3,
@@ -22,7 +21,7 @@ import { useState } from "react"
 export default function Profile() {
   const { user } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(false)
+//   const [loading, setLoading] = useState(false)
   const [editForm, setEditForm] = useState({
     displayName: user?.displayName || "",
     email: user?.email || "",
@@ -49,18 +48,18 @@ export default function Profile() {
     return `${day} ${month} ${year}`;
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen bg-gray-50">
+//         <Navbar />
+//         <div className="max-w-7xl mx-auto px-4 py-6">
+//           <div className="flex items-center justify-center h-64">
+//             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+//           </div>
+//         </div>
+//       </div>
+//     )
+//   }
 
   if (!user) {
     return (
