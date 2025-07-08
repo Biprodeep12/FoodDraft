@@ -7,6 +7,7 @@ import { collection, addDoc, deleteDoc, doc, getDocs, query as firestoreQuery, w
 import { db } from "@/firebase/firebase";
 import { useMessages } from "@/Context/messagesContext";
 import { useAuth } from "@/Context/userContext";
+import Link from "next/link";
 
 interface Product {
   product_name: string;
@@ -204,9 +205,9 @@ export default function BookMark() {
             </div>
             <div className="text-xl font-semibold">Login to BookMark your Products</div>
             <div className="text-gray-600 mb-5">Save your Products</div>
-            <button onClick={()=>window.location.href='/auth'} className="mx-auto font-bold gap-2 px-6 py-3 cursor-pointer bg-emerald-500 hover:bg-emerald-600 hover:scale-105 transtion-all duration-200 text-white rounded-xl">
+            <Link href='/auth' className="mx-auto font-bold gap-2 px-6 py-3 cursor-pointer bg-emerald-500 hover:bg-emerald-600 hover:scale-105 transtion-all duration-200 text-white rounded-xl">
               Sign In / Sign Up
-            </button>
+            </Link>
           </div>) : products.length === 0 ?(
           <div className="text-center py-16">
             <div className="w-16 h-16 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-4">

@@ -1,5 +1,7 @@
 import Navbar from "@/components/navbar"
+import { useMessages } from "@/Context/messagesContext"
 import { useAuth } from "@/Context/userContext"
+import { updateEmail, updateProfile } from "firebase/auth"
 import {
   User,
   Mail,
@@ -16,29 +18,65 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function Profile() {
   const { user } = useAuth()
+  const { setMessage, setMessageError } = useMessages()
   const [isEditing, setIsEditing] = useState(false)
-//   const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [editForm, setEditForm] = useState({
     displayName: user?.displayName || "",
     email: user?.email || "",
+    photoURL: user?.photoURL || "",
   })
 
-  const handleSave = () => {
-    console.log("Saving profile:", editForm)
-    setIsEditing(false)
-  }
+  const handleSave = async () => {
+  if (!user) return;
 
-  const handleCancel = () => {
+  try {
+    const updateProfileData: { displayName?: string; photoURL?: string } = {};
+
+    if (editForm.displayName !== user.displayName) {
+      updateProfileData.displayName = editForm.displayName;
+    }
+
+    if (editForm.photoURL !== user.photoURL) {
+      updateProfileData.photoURL = editForm.photoURL;
+    }
+
+    if (Object.keys(updateProfileData).length > 0) {
+      await updateProfile(user, updateProfileData);
+    }
+
+    if (editForm.email !== user.email) {
+      await updateEmail(user, editForm.email);
+    }
+
+    await user.reload();
+
+    setMessageError(false);
+    setMessage("Profile updated successfully!");
+    setIsEditing(false);
+  } catch (error) {
+    setMessageError(true);
+    setMessage("Error Updating Profile: " + error);
+  }
+  };
+
+  useEffect(()=>{
     setEditForm({
       displayName: user?.displayName || "",
       email: user?.email || "",
+      photoURL: user?.photoURL || "",
     })
-    setIsEditing(false)
-  }
+  },[isEditing])
+
+  useEffect(()=>{
+    if(user?.uid) {
+      setLoading(false)
+    }
+  },[user])
 
   const clipDate = (dateString: string|undefined)=> {
     const date = new Date(dateString||'');
@@ -48,18 +86,18 @@ export default function Profile() {
     return `${day} ${month} ${year}`;
   }
 
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen bg-gray-50">
-//         <Navbar />
-//         <div className="max-w-7xl mx-auto px-4 py-6">
-//           <div className="flex items-center justify-center h-64">
-//             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-//           </div>
-//         </div>
-//       </div>
-//     )
-//   }
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!user) {
     return (
@@ -73,10 +111,10 @@ export default function Profile() {
             <h3 className="text-2xl font-bold text-gray-900 mb-3">Please Sign In</h3>
             <p className="text-gray-600 mb-6">You need to be signed in to view your profile</p>
             <Link
-              href="/"
+              href="/auth"
               className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200"
             >
-              Go Home
+              Sign In / Sign Up
             </Link>
           </div>
         </div>
@@ -116,7 +154,7 @@ export default function Profile() {
                 <h1 className="text-4xl font-bold text-gray-900">{user.displayName || "Anonymous User"}</h1>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl font-medium transition-colors duration-200"
+                  className="inline-flex cursor-pointer items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl font-medium transition-colors duration-200"
                 >
                   <Edit3 className="w-4 h-4" />
                   Edit Profile
@@ -191,7 +229,7 @@ export default function Profile() {
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
               <Heart className="w-5 h-5 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Favorite Categories</h3>
+            <div className="text-xl font-bold text-gray-900">Favorite Categories</div>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {/* {user.favoriteCategories.map((category, index) => (
@@ -215,38 +253,16 @@ export default function Profile() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 max-w-md w-full">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Edit Profile</h2>
+                <div className="text-2xl font-bold text-gray-900">Edit Profile</div>
                 <button
-                  onClick={handleCancel}
-                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors duration-200"
+                  onClick={()=>setIsEditing(false)}
+                  className="p-2 cursor-pointer hover:bg-gray-100 rounded-xl transition-colors duration-200"
                 >
                   <X className="w-6 h-6 text-gray-500" />
                 </button>
               </div>
 
               <div className="space-y-6">
-                <div className="text-center">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-emerald-200 shadow-sm mx-auto mb-4">
-                    {user.photoURL ? (
-                      <Image
-                        src={user.photoURL || "/placeholder.svg"}
-                        alt={user.displayName || "User"}
-                        width={96}
-                        height={96}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-emerald-100 flex items-center justify-center">
-                        <User className="w-12 h-12 text-emerald-600" />
-                      </div>
-                    )}
-                  </div>
-                  <button className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl font-medium transition-colors duration-200">
-                    <Camera className="w-4 h-4" />
-                    Change Photo
-                  </button>
-                </div>
-
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
@@ -273,14 +289,14 @@ export default function Profile() {
 
                 <div className="flex gap-3 pt-4">
                   <button
-                    onClick={handleCancel}
-                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200"
+                    onClick={()=>setIsEditing(false)}
+                    className="flex-1 px-6 py-3 border cursor-pointer border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
-                    className="flex-1 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 cursor-pointer bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors duration-200 flex items-center justify-center gap-2"
                   >
                     <Save className="w-4 h-4" />
                     Save Changes
