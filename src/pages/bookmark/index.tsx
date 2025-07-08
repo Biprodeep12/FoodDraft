@@ -72,11 +72,10 @@ export default function BookMark() {
         setMessage('');
         setMessageError(false);
       }
-    }, 3000);
+    }, 1000);
 
     return () => clearTimeout(timeout);
   }, [user]);
-
 
   const getNutritionGradeColor = (grade: string) => {
     switch (grade?.toLowerCase()) {
@@ -131,6 +130,7 @@ export default function BookMark() {
       setBookmarkedCodes((prev) => prev.filter((c) => c !== code));
       setMessage("Product removed from bookmark!");
       setMessageError(true);
+      window.location.reload();
     }
   } catch (error) {
     setMessage("Error toggling bookmark: " + error);

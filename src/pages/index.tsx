@@ -104,7 +104,7 @@ export default function Home() {
               </div>
 
               <div className="hidden md:flex items-center gap-8">
-                <a href="#"
+                <a href="#fea"
                   className="text-gray-700 hover:text-emerald-600 font-semibold transition-colors duration-300"
                 >
                   Features
@@ -366,6 +366,7 @@ export default function Home() {
       </div>
 
       <div
+        id="fea"
         className="w-full relative rounded-[50px_50px_0_0] md:rounded-[100px_100px_0_0] px-4 sm:px-6 lg:px-8 py-20 lg:py-28 bg-gradient-to-br from-emerald-50 to-teal-50"
       >
         <div className="max-w-6xl mx-auto">
