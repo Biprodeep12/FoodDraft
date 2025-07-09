@@ -20,3 +20,23 @@ html,body{
 /* *{
   transition: all 0.2s linear;
 } */
+.SidePop1{
+  transform: translateX(100%);
+  animation: sidepops1 1s ease-in 10s forwards;
+}
+.SidePop2{
+  transform: translateX(100%);
+  animation: sidepops2 1s ease-in 10s forwards;
+}
+.SidePop2:hover{
+  transform: translateX(84px);
+}
+@keyframes sidepops1 {
+  from{transform: translateX(100%);}
+  to{transform: translateX(0);}
+}
+@keyframes sidepops2 {
+  0%{transform: translateX(100%);}
+  50%{transform: translateX(0);}
+  100%{transform: translateX(84px);}
+}

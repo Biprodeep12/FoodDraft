@@ -33,6 +33,7 @@ import { useAuth } from "@/Context/userContext"
 import Image from "next/image"
 import { signOut } from "firebase/auth"
 import { auth } from "@/firebase/firebase"
+import Link from "next/link"
 
 export default function Home() {
   const [openScanner, setOpenScanner] = useState(false)
@@ -82,6 +83,16 @@ export default function Home() {
 
   return (
     <>
+      <div className="fixed right-0 top-1/3 -translate-y-1/2 z-[100] flex flex-col gap-5 items-end">
+       {!user && <Link href='/auth' className="p-4 sm:block hidden cursor-pointer bg-emerald-500 hover:bg-emerald-600 rounded-[16px_0_0_16px] text-xl font-bold text-white shadow-2xl transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105 SidePop1">Login</Link>}
+       <button className="group p-4 transform hover:-translate-x-[84px] cursor-pointer text-xl font-bold text-gray-600 hover:text-emerald-600 bg-white/90 backdrop-blur-sm border-2 border-gray-200 hover:border-emerald-300 rounded-[20px_0_0_20px] hover:bg-white hover:shadow-xl transition-all duration-300 SidePop2"
+                >
+          <a href="#searchSect" className="flex items-center gap-3">
+            <Search className="w-7 h-7 group-hover:scale-110 transition-transform duration-300" />
+            <span>Search</span>
+          </a>
+        </button>
+      </div>
       <div className="min-h-screen w-full flex px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 via-emerald-100 to-teal-100 justify-center items-center relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/30 rounded-full blur-3xl"></div>
