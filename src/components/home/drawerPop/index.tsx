@@ -5,7 +5,10 @@ import Image from "next/image";
 import { IconNutri } from "./icons";
 import { ProductAI } from "./ProductAI";
 import { Loader } from "./loader";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/Context/userContext";
+import { collection, doc, getDoc, getDocs, increment, setDoc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebase";
 
 interface Nutrient {
   name: string;
@@ -21,6 +24,8 @@ interface NutrientListProps {
 
 const DrawerPop = () =>{
     const { barcode, product, loading, setBarcode } = useProduct();
+    const { user } = useAuth();
+    const [scanned,setScanned] =useState(0)
 
     const getNutriScoreColor = useCallback((grade: string | undefined) => {
     switch (grade?.toLowerCase()) {
@@ -44,6 +49,31 @@ const DrawerPop = () =>{
   function closeDrawer(){
     setBarcode("");
   }
+
+useEffect(() => {
+  const updateNumberOfProductsScanned = async () => {
+    if (!user?.uid) return;
+
+    try {
+      const scannedDocRef = doc(db, "users", user.uid, "scannedNo", "counter");
+      const scannedDoc = await getDoc(scannedDocRef);
+
+      if (scannedDoc.exists()) {
+        await updateDoc(scannedDocRef, {
+          scannedNo: increment(1),
+        });
+      } else {
+        await setDoc(scannedDocRef, {
+          scannedNo: 1,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating scannedNo:", error);
+    }
+  };
+
+  updateNumberOfProductsScanned();
+  }, [product]);
 
   const NutrientList = React.memo(({ title, data, color }: NutrientListProps) => (
   <div className="bg-gray-50 rounded-md shadow-sm p-3">

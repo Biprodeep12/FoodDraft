@@ -1,7 +1,9 @@
 import Navbar from "@/components/navbar"
 import { useMessages } from "@/Context/messagesContext"
 import { useAuth } from "@/Context/userContext"
+import { db } from "@/firebase/firebase"
 import { updateEmail, updateProfile } from "firebase/auth"
+import { doc, getDoc } from "firebase/firestore"
 import {
   User,
   Mail,
@@ -25,6 +27,7 @@ export default function Profile() {
   const { setMessage, setMessageError } = useMessages()
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [scannedNo, setScannedNo] = useState<number>(0);
   const [editForm, setEditForm] = useState({
     displayName: user?.displayName || "",
     email: user?.email || "",
@@ -64,6 +67,24 @@ export default function Profile() {
   }
   };
 
+  const fetchScannedNo = async () => {
+    if (!user?.uid) return 0;
+    try {
+      const scannedDocRef = doc(db, "users", user.uid, "scannedNo", "counter");
+      const scannedDoc = await getDoc(scannedDocRef);
+
+      if (scannedDoc.exists()) {
+        const data = scannedDoc.data();
+        return data.scannedNo || 0;
+      } else {
+        return 0;
+      }
+    } catch (error) {
+      console.error("Error fetching scannedNo:", error);
+      return 0;
+    }
+  };
+
   useEffect(()=>{
     setEditForm({
       displayName: user?.displayName || "",
@@ -76,6 +97,12 @@ export default function Profile() {
     if(user?.uid) {
       setLoading(false)
     }
+  const getScanned = async () => {
+    const no = await fetchScannedNo();
+    setScannedNo(no);
+  };
+
+  getScanned();
   },[user])
 
   const clipDate = (dateString: string|undefined)=> {
@@ -193,7 +220,7 @@ export default function Profile() {
                 <ScanLine className="w-7 h-7 text-white" />
               </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">0</p>
+                <p className="text-3xl font-bold text-gray-900">{scannedNo}</p>
                 <p className="text-gray-600 font-medium">Products Scanned</p>
               </div>
             </div>
