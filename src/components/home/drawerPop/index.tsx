@@ -5,7 +5,7 @@ import Image from "next/image";
 import { IconNutri } from "./icons";
 import { ProductAI } from "./ProductAI";
 import { Loader } from "./loader";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useAuth } from "@/Context/userContext";
 import { doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
@@ -25,7 +25,7 @@ interface NutrientListProps {
 const DrawerPop = () =>{
     const { barcode, product, loading, setBarcode } = useProduct();
     const { user } = useAuth();
-    
+
     const getNutriScoreColor = useCallback((grade: string | undefined) => {
     switch (grade?.toLowerCase()) {
     case "a": return "bg-green-500";
