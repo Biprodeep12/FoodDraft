@@ -258,7 +258,7 @@ useEffect(() => {
                </div>
              </div>
 
-              <ProductAI nutri={product.product.product_name}/>
+              <ProductAI/>
             </div>
           ) : (
             <div className="flex h-full items-center justify-center text-center text-gray-500">

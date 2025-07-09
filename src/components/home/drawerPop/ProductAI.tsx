@@ -8,11 +8,7 @@ interface Message {
   content: string;
 }
 
-interface ProductAIProps {
-  nutri: string;
-}
-
-export const ProductAI = ({ nutri }: ProductAIProps) => {
+export const ProductAI = () => {
   const { product } = useProduct()
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
