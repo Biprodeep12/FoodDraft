@@ -1,3 +1,4 @@
+import { useProduct } from "@/Context/productContext";
 import { ArrowUp, LoaderPinwheel, Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -12,16 +13,17 @@ interface ProductAIProps {
 }
 
 export const ProductAI = ({ nutri }: ProductAIProps) => {
+  const { product } = useProduct()
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<string[]>([
-    `Is ${nutri} good for health?`,
-    `Can ${nutri} help with weight loss?`,
-    `What are the benefits of ${nutri}?`,
-    `Are there any side effects of ${nutri}?`,
-    `How much ${nutri} should I consume daily?`,
+    `Is this Product good for health?`,
+    `Can this Product help with weight loss?`,
+    `What are the benefits of this Product?`,
+    `Are there any side effects of this Product?`,
+    `How much of this Product should I consume daily?`,
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -40,6 +42,13 @@ const handleSendMessage = useCallback(async (customMessage?: string) => {
   const messageToSend = customMessage ?? input.trim();
   if (!messageToSend) return;
 
+  const productDetails = {
+    product_name: product?.product.product_name,
+    brands: product?.product.brands,
+    nutriments: product?.product.nutriments,
+    ingredients: product?.product.ingredients_tags,
+  }
+
   const userMessage: Message = { role: "user", content: messageToSend };
   const newMessages = [...messages, userMessage];
 
@@ -52,7 +61,10 @@ const handleSendMessage = useCallback(async (customMessage?: string) => {
     const res = await fetch("/api/aiProduct", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: newMessages }),
+      body: JSON.stringify({ 
+        messages: newMessages,
+        product: productDetails, 
+      }),
     });
 
     const data = await res.json();

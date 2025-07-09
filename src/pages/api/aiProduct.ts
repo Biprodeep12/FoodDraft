@@ -14,7 +14,7 @@ export default async function handler(
   }
 
   try {
-    const { messages } = req.body;
+    const { messages, product } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ 
@@ -27,7 +27,30 @@ export default async function handler(
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    console.log('Making request to OpenRouter with messages:', messages);
+    const productInfo = product
+    ? `\n\nHere is product information you should use while answering:\n\nProduct Name: ${product.product_name}\nBrand: ${product.brands}\nNutriments: ${JSON.stringify(product.nutriments, null, 2)}\nIngredients: ${product.ingredients_tags?.slice(0, 15).join(', ')}\n\n`
+    : "";
+
+    const systemPrompt = `
+      You are a certified nutritionist.
+
+      Your role is to assist only with topics related to:
+      - Food
+      - Nutrients
+      - Ingredients
+      - Diet planning
+      - Health improvement
+      - Weight management
+      - Nutrition labels
+      - Food additives or safety
+
+      You must:
+      - Strictly avoid answering anything outside of nutrition and health.
+      - If the user asks anything unrelated, reply with:
+        "I'm only able to assist with nutrition-related questions."
+      - Always respond clearly and briefly in **English only**.
+      ${productInfo}
+      `;
 
     const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
@@ -40,11 +63,7 @@ export default async function handler(
         messages: [
           {
             role: 'system',
-            content: `You are a certified nutritionist. 
-You strictly answer only questions related to food, nutrients, diets, health, or weight management. 
-You do not answer any other type of question. 
-Keep all your responses brief, clear, and strictly in English. 
-If a question is irrelevant to nutrition, politely reply: "I'm only able to assist with nutrition-related questions."`,
+            content: systemPrompt
           },
           ...messages,
         ],
