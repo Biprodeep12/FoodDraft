@@ -2,7 +2,7 @@
 
 # 🥗 FoodDraft
 
-**AI-Powered Food Product Analyzer**
+AI-Powered Food Product Analyzer
 
 [Live Site 🚀](https://food-draft.vercel.app/)  
 [GitHub Repository 📦](https://github.com/Biprodeep12/FoodDraft)
