@@ -34,15 +34,15 @@ FoodDraft is an AI-enhanced web application that allows users to scan and analyz
 ```bash
 git clone https://github.com/Biprodeep12/FoodDraft.git
 cd FoodDraft
-
+```
 2. Install Dependencies
-
+```
 npm install
-
+```
 3. Set Up Environment Variables
 
 Create a .env.local file in the root directory and add:
-
+```
 NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
@@ -51,11 +51,11 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 OPENROUTER_API_KEY=your_openrouter_api_key
-
+```
 4. Run the App
-
+```
 npm run dev
-
+```
 
 ---
 
