@@ -1,5 +1,3 @@
----
-
 # 🥗 FoodDraft
 
 AI-Powered Food Product Analyzer
