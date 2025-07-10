@@ -60,27 +60,27 @@ npm run dev
 ---
 
 📁 Folder Structure
-
+```
 /pages           # Next.js pages
 /components      # Reusable UI components
 /lib             # Firebase & utility functions
 /api             # Backend API routes
 /Context         # Global state and message handling
 /public          # Static assets
-
+```
 
 ---
 
 🧠 AI Prompt Structure
 
 The AI is prompted with:
-
+```
 You are a certified nutritionist.
 You strictly answer only questions related to food, nutrients, diets, health, or weight management.
 You do not answer any other type of question.
 If a question is irrelevant to nutrition, reply: "I'm only able to assist with nutrition-related questions."
 Add detailed productInfo in your responses.
-
+```
 
 ---
 
