@@ -69,14 +69,8 @@ You must:
     })
 
     const data = await response.json()
-    const result = data?.choices?.[0]?.message?.content
-
-    if (data?.error?.code === 429) {
-        return res.status(429).json({
-            result: "Gemini is currently rate-limited. Please try again in a few minutes or add your own API key via OpenRouter."
-        })
-    }
-
+    const result = data?.choices?.[0]?.message?.Content
+    
     res.status(200).json({ result })
   } catch (err) {
     console.error(err)

@@ -56,7 +56,7 @@ const HomeAi = () => {
       setInputValue("")
 
       try {
-        const res = await fetch("/api/homeAi", {
+        const res = await fetch("/api/aiProduct", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
