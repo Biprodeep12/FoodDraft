@@ -71,7 +71,7 @@ export default async function handler(
     });
 
     const responseData = await response.json();
-    console.log('OpenRouter response:', responseData);
+    // console.log('OpenRouter response:', responseData);
 
     if (!response.ok) {
       console.error('OpenRouter API error:', responseData);
