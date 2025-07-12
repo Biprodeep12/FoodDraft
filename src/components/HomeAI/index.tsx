@@ -1,4 +1,5 @@
-import { Brain, X, ArrowUp, Bot, CircleUserRound, SquareArrowOutUpLeft, SquareArrowOutDownRight } from "lucide-react"
+import { useAuth } from "@/Context/userContext"
+import { Brain, X, ArrowUp, Bot, CircleUserRound, SquareArrowOutUpLeft, SquareArrowOutDownRight, Camera, Upload } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import ReactMarkdown from "react-markdown"
 
@@ -14,7 +15,10 @@ const HomeAi = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [openFileDrop, setOpenFileDrop] = useState(false);
   const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
+
+  const { user } = useAuth()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -52,11 +56,12 @@ const HomeAi = () => {
       setInputValue("")
 
       try {
-        const res = await fetch("/api/aiProduct", {
+        const res = await fetch("/api/homeAi", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: newMessages,
+            productUser: user?.displayName,
           }),
         })
 
@@ -197,7 +202,29 @@ const HomeAi = () => {
             </div>
 
             <div className="border-t border-gray-300 bg-white p-3">
-              <div className="flex gap-2">
+              <div className="flex relative gap-2">
+                {width <600 && openFileDrop &&
+                <>
+                    <div className="absolute rounded-lg bg-white border border-gray-300 bottom-10 left-0 flex flex-col gap-0.5 p-1 text-sm z-50">
+                        <button
+                            className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
+                        >
+                            <Camera size={16} /> Open Camera
+                        </button>
+                        <button
+                            className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
+                        >
+                            <Upload size={16} /> Upload Photo
+                        </button>
+                    </div>
+                </>}
+                <button onClick={()=>{
+                    if(width<600){
+                        setOpenFileDrop(!openFileDrop);
+                    }
+                }} className="cursor-pointer p-1 rounded-lg hover:bg-gray-100 absolute top-1/2 -translate-1/2 left-5">
+                    <Camera className="text-emerald-500"/>
+                </button>
                 <input
                   ref={inputRef}
                   type="text"
@@ -206,7 +233,7 @@ const HomeAi = () => {
                   onKeyDown={handleKeyPress}
                   placeholder="Type your message..."
                   disabled={isLoading}
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50"
+                  className="flex-1 border border-gray-300 rounded-lg pr-3 pl-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50"
                 />
                 <button
                   onClick={() => handleSendMessage(inputValue)}
@@ -287,7 +314,6 @@ const HomeAi = () => {
                 ))
                 )}
 
-
               {isLoading && (
                 <div className="flex justify-start items-center gap-2">
                   <Bot className="h-6 w-6 mt-1 text-emerald-500 shrink-0" />
@@ -320,7 +346,29 @@ const HomeAi = () => {
             </div>
 
             <div className=" border border-gray-300 shadow-xl mb-5 max-[600px]:mb-0 max-w-2/3 max-[600px]:max-w-full mx-auto w-full max-[600px]:rounded-none rounded-xl bg-white p-3">
-              <div className="flex gap-2">
+              <div className="flex gap-2 relative">
+                {width <600 && openFileDrop &&
+                <>
+                    <div className="absolute rounded-lg bg-white border border-gray-300 bottom-10 left-0 flex flex-col gap-0.5 p-1 text-sm z-50">
+                        <button
+                            className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
+                        >
+                            <Camera size={16} /> Open Camera
+                        </button>
+                        <button
+                            className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
+                        >
+                            <Upload size={16} /> Upload Photo
+                        </button>
+                    </div>
+                </>}
+                <button onClick={()=>{
+                    if(width<600){
+                        setOpenFileDrop(!openFileDrop);
+                    }
+                }} className="cursor-pointer p-1 rounded-lg hover:bg-gray-100 absolute top-1/2 -translate-1/2 left-5">
+                    <Camera className="text-emerald-500"/>
+                </button>
                 <input
                   ref={inputRef}
                   type="text"
@@ -329,7 +377,7 @@ const HomeAi = () => {
                   onKeyDown={handleKeyPress}
                   placeholder="Type your message..."
                   disabled={isLoading}
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50"
+                  className="flex-1 border border-gray-300 rounded-lg pr-3 pl-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50"
                 />
                 <button
                   onClick={() => handleSendMessage(inputValue)}
