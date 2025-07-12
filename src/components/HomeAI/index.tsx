@@ -264,12 +264,13 @@ const HomeAi = () => {
                 <span className="text-white font-medium text-lg">AI Assistant</span>
               </div>
               <div className="flex gap-2">
+                {width>600 &&
                 <button
                   onClick={toggleFullscreen}
                   className="cursor-pointer hover:bg-emerald-600 p-1 rounded-lg transition-colors"
                 >
                   <SquareArrowOutDownRight size={24} className="text-white transition-transform" />
-                </button>
+                </button>}
                 <button
                   onClick={closeChat}
                   className="cursor-pointer hover:bg-emerald-600 p-1 rounded-lg text-white transition-colors"
