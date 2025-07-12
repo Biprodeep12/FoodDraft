@@ -1,4 +1,4 @@
-import { Brain, ExternalLink, X, ArrowUp, Bot, CircleUserRound } from "lucide-react"
+import { Brain, X, ArrowUp, Bot, CircleUserRound, SquareArrowOutUpLeft, SquareArrowOutDownRight } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import ReactMarkdown from "react-markdown"
 
@@ -131,7 +131,7 @@ const HomeAi = () => {
                   onClick={toggleFullscreen}
                   className="cursor-pointer hover:bg-emerald-600 p-1 rounded-lg transition-colors"
                 >
-                  <ExternalLink size={18} className="text-white transition-transform -rotate-90" />
+                  <SquareArrowOutUpLeft size={18} className="text-white transition-transform" />
                 </button>
                 <button
                   onClick={closeChat}
@@ -228,9 +228,9 @@ const HomeAi = () => {
 
       {isOpen && isFullscreen && (
         <>
-          <div className="fixed inset-0 bg-white/20 backdrop-blur-sm z-[1001]" />
+          <div className="fixed inset-0 bg-white/20 backdrop-blur-sm z-[1001] flex justify-center items-center">
 
-          <div className="fixed inset-0 m-auto w-[90vw] h-[90vh] shadow-lg rounded-lg bg-gray-50 flex flex-col overflow-hidden z-[1002]">
+          <div className=" w-[90%] h-[90%] shadow-lg rounded-lg bg-gray-50 flex flex-col overflow-hidden z-[1002]">
             <div className="flex flex-row justify-between items-center p-3 bg-emerald-500">
               <div className="flex items-center gap-2">
                 <Brain className="h-6 w-6 text-white" />
@@ -241,7 +241,7 @@ const HomeAi = () => {
                   onClick={toggleFullscreen}
                   className="cursor-pointer hover:bg-emerald-600 p-1 rounded-lg transition-colors"
                 >
-                  <ExternalLink size={24} className="text-white transition-transform rotate-90" />
+                  <SquareArrowOutDownRight size={24} className="text-white transition-transform" />
                 </button>
                 <button
                   onClick={closeChat}
@@ -319,7 +319,7 @@ const HomeAi = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="border border-gray-300 shadow-xl mb-5 max-[600px]:mb-0 max-w-2/3 max-[600px]:max-w-full mx-auto w-full max-[600px]:rounded-none rounded-xl bg-white p-3">
+            <div className=" border border-gray-300 shadow-xl mb-5 max-[600px]:mb-0 max-w-2/3 max-[600px]:max-w-full mx-auto w-full max-[600px]:rounded-none rounded-xl bg-white p-3">
               <div className="flex gap-2">
                 <input
                   ref={inputRef}
@@ -345,6 +345,7 @@ const HomeAi = () => {
                 </button>
               )}
             </div>
+          </div>
           </div>
         </>
       )}
