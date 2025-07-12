@@ -230,7 +230,7 @@ const HomeAi = () => {
         <>
           <div className="fixed inset-0 bg-white/20 backdrop-blur-sm z-[1001]" />
 
-          <div className="fixed top-[5vh] left-[5vw] w-[90vw] h-[90vh] shadow-lg rounded-lg bg-gray-50 flex flex-col overflow-hidden z-[1002]">
+          <div className="fixed inset-0 m-auto w-[90vw] h-[90vh] shadow-lg rounded-lg bg-gray-50 flex flex-col overflow-hidden z-[1002]">
             <div className="flex flex-row justify-between items-center p-3 bg-emerald-500">
               <div className="flex items-center gap-2">
                 <Brain className="h-6 w-6 text-white" />
