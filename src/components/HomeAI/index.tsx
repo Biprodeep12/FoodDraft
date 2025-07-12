@@ -121,7 +121,7 @@ const HomeAi = () => {
 
         {isOpen && !isFullscreen && (
           <div className="absolute shadow-lg bottom-0 right-0 rounded-lg bg-white flex flex-col overflow-hidden transition-all duration-300 h-[500px] w-[350px]">
-            <div className="flex flex-row justify-between items-center m-3 bg-emerald-500">
+            <div className="flex flex-row justify-between items-center p-3 bg-emerald-500">
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-white" />
                 <span className="text-white font-medium">AI Assistant</span>
