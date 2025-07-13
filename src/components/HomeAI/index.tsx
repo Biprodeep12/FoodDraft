@@ -119,9 +119,9 @@ const HomeAi = () => {
                 setIsFullscreen(true)
             }
           }}
-          className="group entry opacity-100 cursor-pointer relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 p-4 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-xl"
+          className="group entry opacity-0 cursor-pointer relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 p-4 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-xl"
         >
-          <Brain className="h-6 w-6 text-white transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110" />
+          <Brain className="h-6 w-6 spin text-white transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110" />
         </button>
 
         {isOpen && !isFullscreen && (

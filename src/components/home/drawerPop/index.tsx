@@ -126,7 +126,7 @@ useEffect(() => {
         <Loader/>
         :
         <div className="flex-1 overflow-y-auto md:p-6">
-          {product?.status === 1 ? (
+          {product?.status == 1 ? (
             <div className="grid gap-8 max-md:pt-6">
               <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                 <div className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 p-4 shadow-md">

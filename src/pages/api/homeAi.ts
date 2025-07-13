@@ -1,79 +1,73 @@
-import type { NextApiRequest, NextApiResponse } from "next"
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
-  },
+interface RequestBody {
+  imageBase64?: string;
+  textPrompt?: string;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST")
-    return res.status(405).json({ error: "Method not allowed" })
+interface ResponseData {
+  result?: string;
+  error?: string;
+}
 
-  const { base64Image } = req.body
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  if (!base64Image)
-    return res.status(400).json({ error: "No image provided" })
+  const { imageBase64, textPrompt } = req.body as RequestBody;
+
+  if (!imageBase64 && !textPrompt) {
+    return res.status(400).json({ error: 'Image or text prompt required' });
+  }
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
+    const messages: Array<{ role: string; content: Array<{ type: string; text?: string; image_url?: string }> }> = [
+      {
+        role: 'user',
+        content: [],
+      },
+    ];
+
+    if (imageBase64) {
+      messages[0].content.push({
+        type: 'image_url',
+        image_url: imageBase64, 
+      });
+    }
+
+    if (textPrompt) {
+      messages[0].content.push({
+        type: 'text',
+        text: textPrompt,
+      });
+    }
+
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
       headers: {
-        Authorization: "Bearer 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",
-        "Content-Type": "application/json",
+        'Authorization': `Bearer ${process.env.OPENROUTER_IMAGE_API_KEY}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp:free",
-        messages: [
-          {
-            role: "system",
-            content: `
-You are a certified nutritionist.
-
-Your role is to assist only with topics related to:
-- Food
-- Nutrients
-- Ingredients
-- Diet planning
-- Health improvement
-- Weight management
-- Nutrition labels
-- Food additives or safety
-
-You must:
-- Strictly avoid answering anything outside of nutrition and health.
-- If the user asks anything unrelated, reply with:
-  "I'm only able to assist with nutrition-related questions."
-- Always respond clearly and briefly in **English only**.
-            `.trim(),
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "You are a certified nutritionist. Please analyze the image and provide nutrition-related information. Only answer if the image is related to food, ingredients, or nutrition.",
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${base64Image}`,
-                },
-              },
-            ],
-          },
-        ],
+        model: 'google/gemini-2.0-flash-exp:free',
+        messages,
       }),
-    })
+    });
 
-    const data = await response.json()
-    const result = data?.choices?.[0]?.message?.Content
-    
-    res.status(200).json({ result })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: "Failed to analyze image" })
+    if (!response.ok) {
+      throw new Error(`OpenRouter API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const result = data.choices[0]?.message?.content || 'No response content';
+
+    return res.status(200).json({ result });
+  } catch (error: unknown) {
+    console.error('Error processing request:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
