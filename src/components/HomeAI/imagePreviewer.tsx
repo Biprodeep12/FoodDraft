@@ -53,7 +53,7 @@ export function ImageCaptureUpload({
       setFileImage(imageUrl ? file : null)
 
     } catch (err) {
-      setError("Failed to process the image. Please try again.")
+      setError("Failed to process the image. Please try again.:"+ err)
     } finally {
       setIsLoading(false)
     }
