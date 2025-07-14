@@ -2,26 +2,33 @@ import { useAuth } from "@/Context/userContext"
 import { Brain, X, ArrowUp, Bot, CircleUserRound, SquareArrowOutUpLeft, SquareArrowOutDownRight, Camera, Upload } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import ReactMarkdown from "react-markdown"
+import { ImageCaptureUpload } from "./imagePreviewer"
+import Image from "next/image"
 
 interface Message {
   role: "user" | "assistant"
-  content: string
+  content?: string
+  imageUrl?: string
 }
 
 const HomeAi = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
+  const [fileImage, setFileImage] = useState<File | null>(null)
   const [inputValue, setInputValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [openFileDrop, setOpenFileDrop] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
 
   const { user } = useAuth()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -45,6 +52,11 @@ const HomeAi = () => {
 
   const handleSendMessage = useCallback(
     async (customMessage?: string) => {
+      if (fileImage) {
+        handleImage(fileImage)
+        return;
+      }
+
       const messageToSend = customMessage ?? inputValue.trim()
       if (!messageToSend) return
 
@@ -88,11 +100,67 @@ const HomeAi = () => {
     [inputValue, messages],
   )
 
+  const handleImage = (file: File) => {
+    const reader = new FileReader()
+    reader.onloadend = async () => {
+      const base64 = (reader.result as string).split(",")[1]
+      // console.log("Image base64 ready:", base64)
+
+      const userMessage: Message = { role: "user", content: inputValue, imageUrl: URL.createObjectURL(file) }
+      const newMessages = [...messages, userMessage]
+      setMessages(newMessages)
+      setIsLoading(true)
+      setError(null)
+      setInputValue("")
+      setPreviewUrl(null)
+      setFileImage(null)
+
+      try {
+        const res = await fetch("/api/homeAi", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            imageBase64: base64,
+            messages: newMessages,
+          }),
+        })
+
+        const data = await res.json()
+
+        if (!res.ok) {
+          throw new Error(
+            data.error
+              ? typeof data.error === "string"
+                ? data.error
+                : JSON.stringify(data.error)
+              : "Failed to analyze image"
+          )
+        }
+
+        // const aiContent = data.result || "No meaningful response."
+
+        const aiMessage = data?.choices?.[0]?.message
+
+        setMessages([...newMessages, aiMessage])
+      } catch (error) {
+        console.error("Image analysis failed:", error)
+        setError(error instanceof Error ? error.message : "Something went wrong")
+        setMessages((prev) => prev.slice(0, -1))
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    reader.readAsDataURL(file)
+  }
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSendMessage(inputValue)
-    }
+    } 
   }
 
   const closeChat = () => {
@@ -108,7 +176,6 @@ const HomeAi = () => {
     setMessages([])
     setError(null)
   }
-
 
   return (
     <>
@@ -162,7 +229,17 @@ const HomeAi = () => {
                           ? "bg-emerald-500 text-white"
                           : "bg-white text-gray-800 border border-gray-300"
                       }`}
-                    >
+                    >{message.imageUrl && (
+                      <div className="mb-2">
+                        <Image
+                          width={200}
+                          height={200}
+                          src={message.imageUrl}
+                          alt="User uploaded"
+                          className="object-contain max-h-[200px] border-4 border-emerald-500 rounded-lg bg-gray-50"
+                        />
+                      </div>
+                    )}
                       <div className="text-sm">
                         <ReactMarkdown>{message.content}</ReactMarkdown>
                       </div>
@@ -202,27 +279,16 @@ const HomeAi = () => {
             </div>
 
             <div className="border-t border-gray-300 bg-white p-3">
+              <ImageCaptureUpload
+                uploadInputRef={uploadInputRef}
+                cameraInputRef={cameraInputRef}
+                setFileImage={setFileImage}
+                previewUrl={previewUrl}
+                setPreviewUrl={setPreviewUrl} />
               <div className="flex relative gap-2">
-                {width <600 && openFileDrop &&
-                <>
-                    <div className="absolute rounded-lg bg-white border border-gray-300 bottom-10 left-0 flex flex-col gap-0.5 p-1 text-sm z-50">
-                        <button
-                            className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
-                        >
-                            <Camera size={16} /> Open Camera
-                        </button>
-                        <button
-                            className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
-                        >
-                            <Upload size={16} /> Upload Photo
-                        </button>
-                    </div>
-                </>}
-                <button onClick={()=>{
-                    if(width<600){
-                        setOpenFileDrop(!openFileDrop);
-                    }
-                }} className="cursor-pointer p-1 rounded-lg hover:bg-gray-100 absolute top-1/2 -translate-1/2 left-5">
+                <button 
+                  onClick={()=>uploadInputRef.current?.click()} 
+                  className="cursor-pointer p-1 rounded-lg hover:bg-gray-100 absolute top-1/2 -translate-1/2 left-5">
                     <Camera className="text-emerald-500"/>
                 </button>
                 <input
@@ -303,7 +369,17 @@ const HomeAi = () => {
                             ? "bg-emerald-500 text-white"
                             : "bg-white text-gray-800 border border-gray-300"
                         }`}
-                    >
+                    >{message.imageUrl && (
+                      <div className="mb-2">
+                        <Image
+                          width={200}
+                          height={200}
+                          src={message.imageUrl}
+                          alt="User uploaded"
+                          className="object-contain max-h-[200px] border-4 border-emerald-500 rounded-lg bg-gray-50"
+                        />
+                      </div>
+                    )}
                         <div className="text-sm">
                         <ReactMarkdown>{message.content}</ReactMarkdown>
                         </div>
@@ -347,16 +423,24 @@ const HomeAi = () => {
             </div>
 
             <div className=" border border-gray-300 shadow-xl mb-5 max-[600px]:mb-0 max-w-2/3 max-[600px]:max-w-full mx-auto w-full max-[600px]:rounded-none rounded-xl bg-white p-3">
+              <ImageCaptureUpload
+                uploadInputRef={uploadInputRef}
+                cameraInputRef={cameraInputRef}
+                setFileImage={setFileImage}
+                previewUrl={previewUrl}
+                setPreviewUrl={setPreviewUrl} />
               <div className="flex gap-2 relative">
                 {width <600 && openFileDrop &&
                 <>
                     <div className="absolute rounded-lg bg-white border border-gray-300 bottom-10 left-0 flex flex-col gap-0.5 p-1 text-sm z-50">
                         <button
+                            onClick={() => cameraInputRef.current?.click()}
                             className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
                         >
                             <Camera size={16} /> Open Camera
                         </button>
                         <button
+                            onClick={() => uploadInputRef.current?.click()}
                             className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
                         >
                             <Upload size={16} /> Upload Photo
@@ -366,6 +450,8 @@ const HomeAi = () => {
                 <button onClick={()=>{
                     if(width<600){
                         setOpenFileDrop(!openFileDrop);
+                    } else {
+                        uploadInputRef.current?.click();
                     }
                 }} className="cursor-pointer p-1 rounded-lg hover:bg-gray-100 absolute top-1/2 -translate-1/2 left-5">
                     <Camera className="text-emerald-500"/>
