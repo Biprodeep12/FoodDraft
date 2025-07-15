@@ -119,7 +119,7 @@ const HomeAi = () => {
 
   const handleImage = async (file: File) => {
     const compressedFile = await imageCompression(file, {
-      maxSizeMB: 1, // compress to under 1MB
+      maxSizeMB: 1,
       maxWidthOrHeight: 1024,
       useWebWorker: true,
     })
@@ -459,7 +459,7 @@ const HomeAi = () => {
               <div className="flex gap-2 relative">
                 {width <600 && openFileDrop &&
                 <>
-                    <div className="absolute rounded-lg bg-white border border-gray-300 bottom-10 left-0 flex flex-col gap-0.5 p-1 text-sm z-50">
+                    <div onClick={()=>setOpenFileDrop(false)} className="absolute rounded-lg bg-white border border-gray-300 bottom-10 left-0 flex flex-col gap-0.5 p-1 text-sm z-50">
                         <button
                             onClick={() => cameraInputRef.current?.click()}
                             className="flex flex-row gap-1.5 items-center p-1 hover:bg-gray-300 rounded-sm cursor-pointer"
