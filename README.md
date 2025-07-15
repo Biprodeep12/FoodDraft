@@ -56,8 +56,8 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 ```
 
-> Setup your firebase Key from Firebase Console
-> Get your free API key from [OpenRouter](https://openrouter.ai/settings/integrations)
+* Setup your firebase Key from Firebase Console
+* Get your free API key from [OpenRouter](https://openrouter.ai/settings/integrations)
 
 ### 4. Run the development server
 
