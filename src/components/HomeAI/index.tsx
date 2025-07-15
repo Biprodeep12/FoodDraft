@@ -36,15 +36,25 @@ const HomeAi = () => {
   }, [])
 
   useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
-    const throttled = () => {
-      clearTimeout((handleResize as any)._tId);
-      (handleResize as any)._tId = setTimeout(handleResize, 150);
-    };
+    const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-    window.addEventListener("resize", throttled);
-    return () => window.removeEventListener("resize", throttled);
-  }, []);
+    const handleResize = () => setWidth(window.innerWidth)
+
+    const throttled = () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current)
+      }
+      resizeTimeoutRef.current = setTimeout(handleResize, 150)
+    }
+
+    window.addEventListener("resize", throttled)
+    return () => {
+      window.removeEventListener("resize", throttled)
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     scrollToBottom()
