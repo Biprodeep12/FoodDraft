@@ -23,6 +23,7 @@ const HomeAi = () => {
   const [openFileDrop, setOpenFileDrop] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { user } = useAuth()
 
@@ -36,25 +37,23 @@ const HomeAi = () => {
   }, [])
 
   useEffect(() => {
-    const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-    const handleResize = () => setWidth(window.innerWidth)
+    const handleResize = () => setWidth(window.innerWidth);
 
     const throttled = () => {
       if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current)
+        clearTimeout(resizeTimeoutRef.current);
       }
-      resizeTimeoutRef.current = setTimeout(handleResize, 150)
-    }
+      resizeTimeoutRef.current = setTimeout(handleResize, 150);
+    };
 
-    window.addEventListener("resize", throttled)
+    window.addEventListener("resize", throttled);
     return () => {
-      window.removeEventListener("resize", throttled)
+      window.removeEventListener("resize", throttled);
       if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current)
+        clearTimeout(resizeTimeoutRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     scrollToBottom()
