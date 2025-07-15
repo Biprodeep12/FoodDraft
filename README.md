@@ -46,9 +46,17 @@ npm install
 Create a `.env.local` file with the following:
 
 ```env
-OPENROUTER_IMAGE_API_KEY=your_openrouter_api_key
+OPENROUTER_API_KEY=
+OPENROUTER_IMAGE_API_KEY=
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
 ```
 
+> Setup your firebase Key from Firebase Console
 > Get your free API key from [OpenRouter](https://openrouter.ai/settings/integrations)
 
 ### 4. Run the development server
@@ -114,9 +122,4 @@ MIT © [Biprodeep Bose](https://github.com/Biprodeep12)
 If you like this project, feel free to ⭐️ the repo and share it!
 Got suggestions or issues? Open an [issue](https://github.com/Biprodeep12/FoodDraft/issues) or submit a PR.
 
-```
-
----
-
-Let me know if you'd like to include demo screenshots, GIFs, or badges!
 ```
