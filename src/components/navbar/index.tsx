@@ -1,7 +1,7 @@
 import { useAuth } from "@/Context/userContext";
 import { auth } from "@/firebase/firebase";
 import { signOut } from "firebase/auth";
-import { Bookmark, LogOut, Menu, User, UserRound, X } from "lucide-react";
+import { Bookmark, LogIn, LogOut, Menu, User, UserRound, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -72,9 +72,9 @@ const Navbar = () => {
               :
               <Link href="/bookmark" className="p-2 cursor-pointer text-gray-600 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg">
                 <Bookmark className="h-5 w-5" />
-              </Link>}
+              </Link>
+         }
           </div>
-          {user && 
           <div className="md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -83,7 +83,7 @@ const Navbar = () => {
               >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-          </div>}
+          </div>
         </div>
         <div
               className={`md:hidden fixed bg-white/10 backdrop-blur-lg border-b border-white/20 px-4 w-full transition-all duration-300 ease-in-out ${
@@ -98,7 +98,7 @@ const Navbar = () => {
                     <Bookmark className="h-5 w-5"/>
                     Bookmarks
                   </Link>
-                  {user && 
+                  {user ?
                   <>
                   <a href="/profile" target="_blank">
                     <div className="flex items-center gap-3 text-gray-700 hover:text-emerald-600 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
@@ -120,7 +120,13 @@ const Navbar = () => {
                     <LogOut className="h-5 w-5" />
                     <span onClick={handleLogout}>Logout</span>
                   </button>
-                  </>}
+                  </>
+                  :
+                  <Link href='/auth' className="flex items-center gap-3 text-emerald-500 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
+                    <LogIn className="h-5 w-5" />
+                    <span>Login</span>
+                 </Link>
+                 }
                 </div>
               </div>
             </div>

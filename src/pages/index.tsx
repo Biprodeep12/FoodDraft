@@ -11,6 +11,7 @@ import {
   Heart,
   Instagram,
   Linkedin,
+  LogIn,
   LogOut,
   Mail,
   MapPin,
@@ -210,7 +211,7 @@ export default function Home() {
                   >
                     Try Scanner
                   </button>
-                  {user && 
+                  {user ?
                   <>
                   <a href="/profile" target="_blank">
                     <div className="flex items-center gap-3 text-gray-700 hover:text-emerald-600 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
@@ -228,11 +229,16 @@ export default function Home() {
                       Profile
                     </div>
                   </a>
-                  <button className="flex items-center gap-3 text-red-500 hover:text-emerald-600 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
+                  <button onClick={handleLogout} className="flex items-center gap-3 text-red-500 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
                     <LogOut className="h-5 w-5" />
-                    <span onClick={handleLogout}>Logout</span>
+                    <span>Logout</span>
                   </button>
-                  </>}
+                  </>
+                  :
+                  <button onClick={()=>window.location.href='/auth'} className="flex items-center gap-3 text-emerald-500 font-semibold transition-colors duration-300 py-2 px-4 rounded-xl hover:bg-emerald-50">
+                    <LogIn className="h-5 w-5" />
+                    <span>Login</span>
+                  </button>}
                 </div>
               </div>
             </div>
