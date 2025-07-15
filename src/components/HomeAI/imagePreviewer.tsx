@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { X } from "lucide-react"
 import Image from "next/image"
 
@@ -20,55 +20,52 @@ export function ImageCaptureUpload({
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const validateFile = (file: File): string | null => {
-    if (!file.type.startsWith("image/")) {
-      return "Please select a valid image file."
-    }
+  const validateFile = useCallback((file: File): string | null => {
+    if (!file.type.startsWith("image/")) return "Please select a valid image file.";
+    if (file.size > 5 * 1024 * 1024) return "File size must be less than 5MB.";
+    return null;
+  }, []);
 
-    const fileSizeMB = file.size / (1024 * 1024)
-    if (fileSizeMB > 5) {
-      return `File size must be less than 5MB.`
-    }
+  const handleFileChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    return null
-  }
+      const validationError = validateFile(file);
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+      setIsLoading(true);
+      setError(null);
 
-    setIsLoading(true)
-    setError(null)
+      try {
+        const imageUrl = URL.createObjectURL(file);
+        setPreviewUrl(imageUrl);
+        setFileImage(file);
+      } catch (err) {
+        console.error("Image processing error:", err);
+        setError("Failed to process the image. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [setFileImage, setPreviewUrl, validateFile]
+  );
 
-    const validationError = validateFile(file)
-    if (validationError) {
-      setError(validationError)
-      setIsLoading(false)
-      return
-    }
-
-    try {
-      const imageUrl = URL.createObjectURL(file)
-      setPreviewUrl(imageUrl)
-      setFileImage(imageUrl ? file : null)
-
-    } catch (err) {
-      setError("Failed to process the image. Please try again.:"+ err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
+      URL.revokeObjectURL(previewUrl);
     }
-    setPreviewUrl(null)
-    setError(null)
 
-    if (cameraInputRef.current) cameraInputRef.current.value = ""
-    if (uploadInputRef.current) uploadInputRef.current.value = ""
-  }
+    setPreviewUrl(null);
+    setFileImage(null);
+    setError(null);
+
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+    if (uploadInputRef.current) uploadInputRef.current.value = "";
+  }, [previewUrl, setPreviewUrl, setFileImage, cameraInputRef, uploadInputRef]);
 
   return (
     <>
@@ -115,7 +112,7 @@ export function ImageCaptureUpload({
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="italic text-gray-500 text-sm">Only 1 Image can be selected</div>
+              <div className="italic text-gray-500 text-sm">Only 1 Image allowed</div>
             </div>
           )}
     </>

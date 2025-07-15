@@ -31,14 +31,19 @@ const HomeAi = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+  }, [])
 
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const throttled = () => {
+      clearTimeout((handleResize as any)._tId);
+      (handleResize as any)._tId = setTimeout(handleResize, 150);
+    };
+
+    window.addEventListener("resize", throttled);
+    return () => window.removeEventListener("resize", throttled);
   }, []);
 
   useEffect(() => {
@@ -53,6 +58,8 @@ const HomeAi = () => {
 
   const handleSendMessage = useCallback(
     async (customMessage?: string) => {
+      if (isLoading) return;
+
       if (fileImage) {
         handleImage(fileImage)
         return;
@@ -244,6 +251,7 @@ const HomeAi = () => {
                           width={200}
                           height={200}
                           src={message.imageUrl}
+                          loading="lazy"
                           alt="User uploaded"
                           className="object-contain max-h-[200px] border-4 border-emerald-500 rounded-lg bg-gray-50"
                         />
@@ -384,6 +392,7 @@ const HomeAi = () => {
                           width={200}
                           height={200}
                           src={message.imageUrl}
+                          loading="lazy"
                           alt="User uploaded"
                           className="object-contain max-h-[200px] border-4 border-emerald-500 rounded-lg bg-gray-50"
                         />
