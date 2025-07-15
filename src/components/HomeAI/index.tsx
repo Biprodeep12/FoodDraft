@@ -2,6 +2,7 @@ import { useAuth } from "@/Context/userContext"
 import { Brain, X, ArrowUp, Bot, CircleUserRound, SquareArrowOutUpLeft, SquareArrowOutDownRight, Camera, Upload } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import ReactMarkdown from "react-markdown"
+import imageCompression from "browser-image-compression"
 import { ImageCaptureUpload } from "./imagePreviewer"
 import Image from "next/image"
 
@@ -100,12 +101,20 @@ const HomeAi = () => {
     [inputValue, messages],
   )
 
-  const handleImage = (file: File) => {
+  const handleImage = async (file: File) => {
+    const compressedFile = await imageCompression(file, {
+      maxSizeMB: 1, // compress to under 1MB
+      maxWidthOrHeight: 1024,
+      useWebWorker: true,
+    })
+
     const reader = new FileReader()
     reader.onloadend = async () => {
       const base64 = (reader.result as string).split(",")[1]
-      // console.log("Image base64 ready:", base64)
-
+      if (!base64) {
+        setError("Failed to read image file.")
+        return
+      }
       const userMessage: Message = { role: "user", content: inputValue, imageUrl: URL.createObjectURL(file) }
       const newMessages = [...messages, userMessage]
       setMessages(newMessages)
@@ -153,7 +162,7 @@ const HomeAi = () => {
       }
     }
 
-    reader.readAsDataURL(file)
+    reader.readAsDataURL(compressedFile)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
