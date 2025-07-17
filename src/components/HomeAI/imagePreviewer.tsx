@@ -18,7 +18,7 @@ export function ImageCaptureUpload({
   setPreviewUrl,
 }: ImageCaptureUploadProps) {
   const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(previewUrl?true:false)
 
   const validateFile = useCallback((file: File): string | null => {
     if (!file.type.startsWith("image/")) return "Please select a valid image file.";

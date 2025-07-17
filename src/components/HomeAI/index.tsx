@@ -181,6 +181,38 @@ const HomeAi = () => {
     reader.readAsDataURL(compressedFile)
   }
 
+  const validateFile = useCallback((file: File): string | null => {
+    if (!file.type.startsWith("image/")) return "Please select a valid image file.";
+    if (file.size > 5 * 1024 * 1024) return "File size must be less than 5MB.";
+    return null;
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    const validationError = validateFile(file);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
+
+    try {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewUrl(imageUrl);
+      setFileImage(file);
+    } catch (err) {
+      console.error("Image processing error:", err);
+      setError("Failed to process the image. Please try again.");
+    } 
+  }, []);
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
@@ -311,7 +343,10 @@ const HomeAi = () => {
                 setFileImage={setFileImage}
                 previewUrl={previewUrl}
                 setPreviewUrl={setPreviewUrl} />
-              <div className="flex relative gap-2">
+              <div
+               onDrop={handleDrop}
+               onDragOver={handleDragOver} 
+               className="flex relative gap-2">
                 <button 
                   onClick={()=>uploadInputRef.current?.click()} 
                   className="cursor-pointer p-1 rounded-lg hover:bg-gray-100 absolute top-1/2 -translate-1/2 left-5">
@@ -456,7 +491,10 @@ const HomeAi = () => {
                 setFileImage={setFileImage}
                 previewUrl={previewUrl}
                 setPreviewUrl={setPreviewUrl} />
-              <div className="flex gap-2 relative">
+              <div
+               onDrop={handleDrop}
+               onDragOver={handleDragOver}
+               className="flex gap-2 relative">
                 {width <600 && openFileDrop &&
                 <>
                     <div onClick={()=>setOpenFileDrop(false)} className="absolute rounded-lg bg-white border border-gray-300 bottom-10 left-0 flex flex-col gap-0.5 p-1 text-sm z-50">
