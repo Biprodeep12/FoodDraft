@@ -247,6 +247,7 @@ const HomeAi = () => {
   const clearChat = () => {
     setMessages([])
     setError(null)
+    setFileSize(null)
   }
 
   return (
