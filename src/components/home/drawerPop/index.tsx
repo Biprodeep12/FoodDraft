@@ -1,11 +1,11 @@
 import { useProduct } from "@/Context/productContext";
 import { evaluateNutrientSafety } from "@/utils/per100g";
-import { Camera, FlaskConical, Info, ScanText, X } from "lucide-react";
+import { Brain, FlaskConical, Info, ScanText, X } from "lucide-react";
 import Image from "next/image";
 import { IconNutri } from "./icons";
 import { ProductAI } from "./ProductAI";
 import { Loader } from "./loader";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/Context/userContext";
 import { doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
@@ -23,52 +23,54 @@ interface NutrientListProps {
 }
 
 const DrawerPop = () =>{
-    const { barcode, product, loading, setBarcode } = useProduct();
-    const { user } = useAuth();
+  const { barcode, product, loading, setBarcode } = useProduct();
+  const { user } = useAuth();
 
-    const getNutriScoreColor = useCallback((grade: string | undefined) => {
+  const [manualBarcode, setManualBarcode] = useState('')
+
+  const getNutriScoreColor = useCallback((grade: string | undefined) => {
     switch (grade?.toLowerCase()) {
-    case "a": return "bg-green-500";
-    case "b": return "bg-lime-500";
-    case "c": return "bg-yellow-500";
-    case "d": return "bg-orange-500";
-    case "e": return "bg-red-500";
-    default: return "bg-gray-400";
-   }
-   }, []);
+      case "a": return "bg-green-500";
+      case "b": return "bg-lime-500";
+      case "c": return "bg-yellow-500";
+      case "d": return "bg-orange-500";
+      case "e": return "bg-red-500";
+      default: return "bg-gray-400";
+    }
+  }, []);
 
-   const productNutri = useMemo(() => {
-   return product ? evaluateNutrientSafety(product) : null;
-   }, [product]);
+  const productNutri = useMemo(() => {
+    return product ? evaluateNutrientSafety(product) : null;
+  }, [product]);
 
-   const allowOneDecimal = useCallback((input: number): number => {
-   return Math.round(input * 10) / 10;
-   }, []);
+  const allowOneDecimal = useCallback((input: number): number => {
+    return Math.round(input * 10) / 10;
+  }, []);
 
   function closeDrawer(){
     setBarcode("");
   }
 
-useEffect(() => {
-  const updateNumberOfProductsScanned = async () => {
-    if (!user?.uid) return;
+  useEffect(() => {
+    const updateNumberOfProductsScanned = async () => {
+      if (!user?.uid) return;
 
-    try {
-      const scannedDocRef = doc(db, "users", user.uid, "scannedNo", "counter");
-      const scannedDoc = await getDoc(scannedDocRef);
+      try {
+        const scannedDocRef = doc(db, "users", user.uid, "scannedNo", "counter");
+        const scannedDoc = await getDoc(scannedDocRef);
 
-      if (scannedDoc.exists()) {
-        await updateDoc(scannedDocRef, {
-          scannedNo: increment(1),
-        });
-      } else {
-        await setDoc(scannedDocRef, {
-          scannedNo: 1,
-        });
+        if (scannedDoc.exists()) {
+          await updateDoc(scannedDocRef, {
+            scannedNo: increment(1),
+          });
+        } else {
+          await setDoc(scannedDocRef, {
+            scannedNo: 1,
+          });
+        }
+      } catch (error) {
+        console.error("Error updating scannedNo:", error);
       }
-    } catch (error) {
-      console.error("Error updating scannedNo:", error);
-    }
   };
 
   updateNumberOfProductsScanned();
@@ -267,16 +269,28 @@ useEffect(() => {
                 <ul className="list-disc list-inside text-left mb-6 space-y-2">
                   <li>Ensure your camera is steady and the barcode is well-lit.</li>
                   <li>Try scanning the barcode from different angles.</li>
-                  <li>The product might not be in our database yet.</li>
+                  <li>The product might not be in database.</li>
                   <li>For best results, scan products with clear, undamaged barcodes.</li>
                 </ul>
                 <div className="flex flex-col gap-4 w-full max-w-sm">
-                  <button className="w-full py-3 text-lg flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md">
-                    <Camera className="h-5 w-5" /> Try AI Image Analyzer
+                  <button onClick={()=> window.location.reload()} className="w-full py-3 cursor-pointer text-lg flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md">
+                    <Brain className="h-5 w-5" /> Try AI Image Analyzer
                   </button>
-                  <button className="w-full py-3 text-lg flex items-center justify-center gap-2 border border-gray-300 text-gray-700 hover:bg-gray-100 bg-transparent rounded-md">
-                    <ScanText className="h-5 w-5" /> Enter Barcode Manually
-                  </button>
+                  <div className="flex w-full max-w-sm items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Enter barcode manually"
+                      value={manualBarcode}
+                      onChange={(e) => setManualBarcode(e.target.value)}
+                      className="flex-1 px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <button
+                      onClick={()=>setBarcode(manualBarcode)}
+                      className="py-3 px-5 cursor-pointer text-lg flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md"
+                    >
+                      <ScanText className="h-5 w-5" /> Go
+                    </button>
+                  </div>
                 </div>
               </div>
           )}

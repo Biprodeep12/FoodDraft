@@ -150,7 +150,9 @@ export default function Home() {
                     />
                  </button>
                   :
-                  <User size={25} color='black'/>}
+                 <button onClick={()=>setOpenDropdown(!openDropdown)} className="cursor-pointer">
+                   <User  size={25} color='black'/>
+                 </button>}
                   <div className={`rounded-lg bg-white p-3 shadow ${openDropdown?'flex opacity-100':'hidden opacity-0'} transition-all duration-200 flex-col gap-[5px] absolute top-14 right-0 w-[200px]`}>
                     <a href="/profile" target="_blank" className="w-full text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
                       <UserRound className="h-5 w-5" />
@@ -251,7 +253,7 @@ export default function Home() {
               <div className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
                 Know What You&apos;re
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600 block">
-                  Eating
+                  Having
                 </span>
               </div>
               <p className="text-lg sm:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed">

@@ -10,7 +10,6 @@ import {
   Calendar,
   Clock,
   ScanLine,
-  Camera,
   Save,
   X,
   Edit3,
@@ -174,9 +173,6 @@ export default function Profile() {
                   </div>
                 )}
               </div>
-              <button className="absolute bottom-2 right-2 w-10 h-10 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-sm transition-colors duration-200">
-                <Camera className="w-5 h-5" />
-              </button>
             </div>
 
             <div className="flex-1 text-center md:text-left">

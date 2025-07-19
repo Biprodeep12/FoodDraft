@@ -52,7 +52,9 @@ const Navbar = () => {
                     />
                  </button>
                   :
-                  <User size={25} color='black'/>}
+                 <button onClick={()=>setOpenDropdown(!openDropdown)} className="cursor-pointer">
+                   <User  size={25} color='black'/>
+                 </button>}
                   <div className={`rounded-lg bg-white p-3 shadow ${openDropdown?'flex opacity-100':'hidden opacity-0'} transition-all duration-200 flex-col gap-[5px] absolute top-14 right-0 w-[200px]`}>
                     <Link href="/profile" target="_blank" className="w-full text-left py-[7px] px-7 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
                       <UserRound className="h-5 w-5" />
