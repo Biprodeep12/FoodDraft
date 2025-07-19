@@ -23,6 +23,8 @@ const HomeAi = () => {
   const [openFileDrop, setOpenFileDrop] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
+  const [fileSize, setFileSize] = useState<string | null>(null)
+
   const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { user } = useAuth()
@@ -67,6 +69,8 @@ const HomeAi = () => {
 
   const handleSendMessage = useCallback(
     async (customMessage?: string) => {
+      setFileSize(null);
+
       if (isLoading) return;
 
       if (fileImage) {
@@ -117,9 +121,15 @@ const HomeAi = () => {
     [inputValue, messages],
   )
 
+  const formatFileSize = (sizeInBytes: number) => {
+    const i = sizeInBytes === 0 ? 0 : Math.floor(Math.log(sizeInBytes) / Math.log(1024));
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    return (sizeInBytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
+  };
+
   const handleImage = async (file: File) => {
     const compressedFile = await imageCompression(file, {
-      maxSizeMB: 1,
+      maxSizeMB: 0.5,
       maxWidthOrHeight: 1024,
       useWebWorker: true,
     })
@@ -131,8 +141,10 @@ const HomeAi = () => {
         setError("Failed to read image file.")
         return
       }
-      const userMessage: Message = { role: "user", content: inputValue, imageUrl: URL.createObjectURL(file) }
+      const userMessage: Message = { role: "user", content: inputValue, imageUrl: URL.createObjectURL(compressedFile) }
       const newMessages = [...messages, userMessage]
+
+      setFileSize(formatFileSize(compressedFile.size));
       setMessages(newMessages)
       setIsLoading(true)
       setError(null)
@@ -175,6 +187,9 @@ const HomeAi = () => {
         setMessages((prev) => prev.slice(0, -1))
       } finally {
         setIsLoading(false)
+        if (userMessage.imageUrl) {
+          URL.revokeObjectURL(userMessage.imageUrl);
+        }
       }
     }
 
@@ -337,6 +352,7 @@ const HomeAi = () => {
             </div>
 
             <div className="border-t border-gray-300 bg-white p-3">
+              {fileSize && <div className="mb-2 text-emerald-500 text-sm italic">Image was Compressed to: {fileSize}</div>}
               <ImageCaptureUpload
                 uploadInputRef={uploadInputRef}
                 cameraInputRef={cameraInputRef}
@@ -485,6 +501,7 @@ const HomeAi = () => {
             </div>
 
             <div className=" border border-gray-300 shadow-xl mb-5 max-[600px]:mb-0 max-w-2/3 max-[600px]:max-w-full mx-auto w-full max-[600px]:rounded-none rounded-xl bg-white p-3">
+              {fileSize && <div className="mb-2 text-emerald-500 text-sm italic">Image was Compressed to: {fileSize}</div>}
               <ImageCaptureUpload
                 uploadInputRef={uploadInputRef}
                 cameraInputRef={cameraInputRef}
