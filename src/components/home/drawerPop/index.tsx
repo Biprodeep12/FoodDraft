@@ -1,6 +1,6 @@
 import { useProduct } from "@/Context/productContext";
 import { evaluateNutrientSafety } from "@/utils/per100g";
-import { FlaskConical, Info, X } from "lucide-react";
+import { Camera, FlaskConical, Info, ScanText, X } from "lucide-react";
 import Image from "next/image";
 import { IconNutri } from "./icons";
 import { ProductAI } from "./ProductAI";
@@ -261,9 +261,24 @@ useEffect(() => {
               <ProductAI/>
             </div>
           ) : (
-            <div className="flex h-full items-center justify-center text-center text-gray-500">
-              <p className="text-xl font-medium">Product not found. Please scan a different barcode.</p>
-            </div>
+              <div className="flex flex-col h-full items-center justify-center text-center text-gray-500 p-4">
+                <p className="text-2xl font-bold mb-4 text-gray-800">Product not found.</p>
+                <p className="text-lg mb-6">Here are some tips and options:</p>
+                <ul className="list-disc list-inside text-left mb-6 space-y-2">
+                  <li>Ensure your camera is steady and the barcode is well-lit.</li>
+                  <li>Try scanning the barcode from different angles.</li>
+                  <li>The product might not be in our database yet.</li>
+                  <li>For best results, scan products with clear, undamaged barcodes.</li>
+                </ul>
+                <div className="flex flex-col gap-4 w-full max-w-sm">
+                  <button className="w-full py-3 text-lg flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md">
+                    <Camera className="h-5 w-5" /> Try AI Image Analyzer
+                  </button>
+                  <button className="w-full py-3 text-lg flex items-center justify-center gap-2 border border-gray-300 text-gray-700 hover:bg-gray-100 bg-transparent rounded-md">
+                    <ScanText className="h-5 w-5" /> Enter Barcode Manually
+                  </button>
+                </div>
+              </div>
           )}
         </div>}
 
