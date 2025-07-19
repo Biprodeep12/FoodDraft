@@ -289,9 +289,14 @@ const HomeAi = () => {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
               {messages.length === 0 ? (
-                <div className="text-center text-gray-500 mt-8">
+                <div className="text-center mt-8">
                   <Brain className="h-12 w-12 mx-auto mb-3 text-emerald-400" />
-                  <p>Hello! How can I help you today?</p>
+                  <p className="text-gray-500 font-bold">Hello! How can I help you today?</p>
+                  <div className="flex flex-col italic text-sm text-gray-400">
+                    <p>Please avoid spamming image uploads.</p>
+                    <p>Excessive usage may lead to temporary image upload restrictions.</p>
+                    <p>Try to upload or capture only food product images.</p>
+                  </div>
                 </div>
               ) : (
                 messages.map((message, index) => (
@@ -406,6 +411,7 @@ const HomeAi = () => {
               <div className="flex items-center gap-2">
                 <Brain className="h-6 w-6 text-white" />
                 <span className="text-white font-medium text-lg">AI Assistant</span>
+
               </div>
               <div className="flex gap-2">
                 {width>600 &&
@@ -426,9 +432,14 @@ const HomeAi = () => {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3 max-w-[90%] max-[600px]:max-w-full w-full mx-auto">
               {messages.length === 0 ? (
-                <div className="text-center text-gray-500 mt-8">
-                    <Brain className="h-12 w-12 mx-auto mb-3 text-emerald-400" />
-                    <p>Hello! How can I help you today?</p>
+                <div className="text-center mt-8">
+                  <Brain className="h-12 w-12 mx-auto mb-3 text-emerald-400" />
+                  <p className="text-gray-500 font-bold">Hello! How can I help you today?</p>
+                  <div className="flex flex-col italic text-gray-400">
+                    <p>Please avoid spamming image uploads.</p>
+                    <p>Excessive usage may lead to temporary image upload restrictions.</p>
+                    <p>Try to upload or capture only food product images.</p>
+                  </div>
                 </div>
                 ) : (
                 messages.map((message, index) => (
