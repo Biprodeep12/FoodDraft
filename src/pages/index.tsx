@@ -589,17 +589,17 @@ export default function Home() {
               {
                 question: "How accurate is the nutritional information?",
                 answer:
-                  "Our database is sourced from official manufacturer data and verified nutritional databases, ensuring 99.9% accuracy. We continuously update our information to reflect the latest product formulations.",
+                  "The nutritional information comes from the OpenFoodFacts database and from OpenRouter AI responses.",
               },
               {
                 question: "Does the app work offline?",
                 answer:
-                  "The scanning feature requires an internet connection to access our comprehensive database. However, we're working on offline capabilities for frequently scanned items.",
+                  "The scanning feature requires an internet connection to access the database or OpenRouter AI.",
               },
               {
-                question: "Can I track my daily nutrition intake?",
+                question: "Can I use AI to get suggestions?",
                 answer:
-                  "Yes! Our app includes a comprehensive nutrition tracking feature that helps you monitor your daily intake of calories, macronutrients, vitamins, and minerals.",
+                  "Yes! You can get responses from OpenRouter's free AI models.",
               },
               {
                 question: "Is my personal data secure?",
@@ -609,7 +609,7 @@ export default function Home() {
               {
                 question: "What if a product isn't in your database?",
                 answer:
-                  "If we don't have a product in our database, you can submit it for review. Our team typically adds new products within 24-48 hours.",
+                  "If a product isn't in the OpenFoodFacts database, our AI Image Analyzer can help, and you can also contribute the product to OpenFoodFacts on their website.",
               },
             ].map((faq, index) => (
               <div
@@ -658,9 +658,15 @@ export default function Home() {
                   onClick={() => window.open(`https://github.com/Biprodeep12`, "_blank", "noopener,noreferrer")}
                   className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110"
                 />
-                <Linkedin className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
-                <Instagram className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
-                <Youtube className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
+                <Linkedin
+                  onClick={() => window.open(`https://www.linkedin.com/in/biprodeep-bose-3b47862ba/`, "_blank", "noopener,noreferrer")} 
+                  className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
+                <Instagram
+                  onClick={() => window.open(`https://www.instagram.com/bosebd/`, "_blank", "noopener,noreferrer")}
+                 className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
+                <Youtube
+                 onClick={() => window.open(`/404`, "_blank", "noopener,noreferrer")}
+                 className="w-8 h-8 text-emerald-300 hover:text-white cursor-pointer transition-colors duration-300 hover:scale-110" />
               </div>
             </div>
             <div>
@@ -682,7 +688,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Pricing
@@ -690,7 +696,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     API
@@ -703,7 +709,7 @@ export default function Home() {
               <ul className="space-y-5 text-emerald-200">
                 <li>
                   <a
-                    href="#"
+                    href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Help Center
@@ -711,7 +717,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Contact Us
@@ -719,7 +725,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Privacy Policy
@@ -727,7 +733,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Terms of Service
