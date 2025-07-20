@@ -102,15 +102,6 @@ FoodDraft/
 
 ---
 
-## 📌 TODO (Future Enhancements)
-
-* [ ] History of past food analyses
-* [ ] User accounts and diet tracking
-* [ ] Better error handling
-* [ ] Barcode scanner integration
-
----
-
 ## 📃 License
 
 MIT © [Biprodeep Bose](https://github.com/Biprodeep12)
