@@ -687,20 +687,20 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Pricing
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     API
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -708,36 +708,36 @@ export default function Home() {
               <div className="text-2xl font-black mb-8 text-emerald-100">Support</div>
               <ul className="space-y-5 text-emerald-200">
                 <li>
-                  <a
+                  <Link
                     href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Help Center
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Contact Us
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="/404"
                     className="hover:text-white transition-colors text-xl font-medium hover:translate-x-1 inline-block duration-200"
                   >
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

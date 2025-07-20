@@ -47,7 +47,7 @@ export default function NotFound() {
               Looks like this page went on a diet and disappeared!
             </p>
             <p className="text-base sm:text-lg text-gray-500 leading-relaxed">
-              Don't worry though - there's plenty of delicious content waiting for you on our main page.
+              Don&apos;t worry though - there&apos;s plenty of delicious content waiting for you on our main page.
             </p>
           </div>
         </div>
